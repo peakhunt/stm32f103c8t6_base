@@ -1,0 +1,20 @@
+1> event_dispatcher           => Done
+2> Circular Buffer            => Done
+3> soft timer                 => Done
+4> blinky                     => Done
+5> shell                      => Done
+6> shell usb                  => Done
+7> shell uart                 => Done
+8> micros             ٍ        => Done
+9> pwm_out                    => Done
+10> shell uart hang debug     => Done
+11> I2C                       => Done
+12> SPI                       => Done
+
+11> Barometer
+12> Accel/Gyro
+13> Magnetometer
+14> AHRЅ
+9> startup hang debug
+   looks like this is boot0/1 pin issue.
+   let's see if this is true.

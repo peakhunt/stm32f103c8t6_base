@@ -1,0 +1,66 @@
+#include "spi_bus.h"
+#include "spi.h"
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// private definitions
+//
+////////////////////////////////////////////////////////////////////////////////
+#define SPI_DEFAULT_TIMEOUT     HAL_MAX_DELAY
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// private variables
+//
+////////////////////////////////////////////////////////////////////////////////
+static SPI_HandleTypeDef*   _hspis[] =
+{
+  &hspi1,
+  &hspi2,
+};
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// private utilities
+//
+////////////////////////////////////////////////////////////////////////////////
+static inline SPI_HandleTypeDef*
+get_spi_handle(SPIBusNumber bus)
+{
+  return _hspis[bus];
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// public interfaces
+//
+////////////////////////////////////////////////////////////////////////////////
+void
+spi_bus_init(void)
+{
+  // SPI is already initialized by CubeMX
+}
+
+void
+spi_bus_tranceive_sync(SPIBusNumber bus, uint8_t* tx, uint8_t* rx, uint16_t len)
+{
+  SPI_HandleTypeDef* hspi = get_spi_handle(bus);
+
+  HAL_SPI_TransmitReceive(hspi, tx, rx, len, SPI_DEFAULT_TIMEOUT);
+}
+
+void
+spi_bus_write_sync(SPIBusNumber bus, uint8_t* tx, uint16_t len)
+{
+  SPI_HandleTypeDef* hspi = get_spi_handle(bus);
+
+  HAL_SPI_Transmit(hspi, tx, len, SPI_DEFAULT_TIMEOUT);
+}
+
+void
+spi_bus_read_sync(SPIBusNumber bus, uint8_t* rx, uint16_t len)
+{
+  SPI_HandleTypeDef* hspi = get_spi_handle(bus);
+
+  HAL_SPI_Receive(hspi, rx, len, SPI_DEFAULT_TIMEOUT);
+}
