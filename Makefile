@@ -18,8 +18,8 @@ TARGET = stm32f103c8t6_base
 # debug build?
 DEBUG = 1
 # optimization
-OPT = -O0
-#OPT = -Og
+#OPT = -O0
+OPT = -Og
 
 
 #######################################
@@ -88,6 +88,7 @@ Src/dma.c
 APP_DIR=app
 APP_SRC=														\
 $(APP_DIR)/circ_buffer.c						\
+$(APP_DIR)/bhash.c									\
 $(APP_DIR)/event_dispatcher.c				\
 $(APP_DIR)/soft_timer.c							\
 $(APP_DIR)/mainloop_timer.c					\
