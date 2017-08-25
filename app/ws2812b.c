@@ -164,9 +164,9 @@ do_debug_test(void)
   {
     dir = 0;
   }
-
-  mainloop_timer_schedule(&_debug_timer, 20);
+  mainloop_timer_schedule(&_debug_timer, 100);
 }
+
 
 static void
 debug_test_timer_callback(SoftTimerElem* te)

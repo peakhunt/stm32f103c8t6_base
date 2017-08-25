@@ -20,7 +20,7 @@
 #define WS2812B_LOW_DUTY_CYCLE        6     // 0.2496 us
 #define WS2812B_HIGH_DUTY_CYCLE       15    // 0.624 us
 
-#define WS2812B_UPDATE_INTERVAL       10    // every 50ms. max 20 HZ
+#define WS2812B_UPDATE_INTERVAL       50    // every 50ms. max 20 HZ
 
 extern void ws2812b_init(void);
 extern void ws2812b_update_color(uint8_t led_ndx, uint32_t color);
