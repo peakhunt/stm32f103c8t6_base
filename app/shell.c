@@ -12,6 +12,7 @@
 #include "shell_if_usb.h"
 #include "micros.h"
 #include "pwm_out.h"
+#include "imu.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -45,6 +46,7 @@ static void shell_command_version(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_micros(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_micros_test(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_pwm_out(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_mag_data(ShellIntf* intf, int argc, const char** argv);
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -84,6 +86,11 @@ static ShellCommand     _commands[] =
     "pwm_out",
     "control pwm duty cycle",
     shell_command_pwm_out,
+  },
+  {
+    "mag_data",
+    "read mag compass data",
+    shell_command_mag_data,
   },
 };
 
@@ -174,6 +181,20 @@ shell_command_pwm_out(ShellIntf* intf, int argc, const char** argv)
 
   shell_printf(intf, "set duty cycle to %d for channel %d\r\n", duty, chnl);
 }
+
+static void
+shell_command_mag_data(ShellIntf* intf, int argc, const char** argv)
+{
+  float data[4];
+
+  imu_get_mag(data);
+
+  shell_printf(intf, "X: %.2f\r\n", data[0]);
+  shell_printf(intf, "Y: %.2f\r\n", data[1]);
+  shell_printf(intf, "Z: %.2f\r\n", data[2]);
+  shell_printf(intf, "O: %.2f\r\n", data[3]);
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //

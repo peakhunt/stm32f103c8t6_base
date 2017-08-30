@@ -18,8 +18,8 @@ TARGET = stm32f103c8t6_base
 # debug build?
 DEBUG = 1
 # optimization
-#OPT = -O0
-OPT = -Og
+OPT = -O0
+#OPT = -Og
 
 
 #######################################
@@ -102,6 +102,9 @@ $(APP_DIR)/pwm_out.c								\
 $(APP_DIR)/i2c_bus.c								\
 $(APP_DIR)/spi_bus.c								\
 $(APP_DIR)/ws2812b.c								\
+$(APP_DIR)/hmc5883.c								\
+$(APP_DIR)/qmc5883.c								\
+$(APP_DIR)/imu.c										\
 $(APP_DIR)/app.c
 
 
@@ -182,7 +185,8 @@ endif
 
 
 # Generate dependency information
-CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)"
+#CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)"
+CFLAGS += -MMD -MF .dep/$(*F).d
 
 
 #######################################
@@ -194,7 +198,7 @@ LDSCRIPT = STM32F103C8Tx_FLASH.ld
 # libraries
 LIBS = -lc -lm -lnosys
 LIBDIR =
-LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
+LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections -u _printf_float
 
 # default action: build all
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin

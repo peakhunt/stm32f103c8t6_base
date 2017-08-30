@@ -11,6 +11,7 @@
 #include "pwm_out.h"
 #include "i2c_bus.h"
 #include "ws2812b.h"
+#include "imu.h"
 
 void
 app_init_f(void)
@@ -32,6 +33,7 @@ app_init_r(void)
   __enable_irq();
 
   ws2812b_init();
+  imu_init();
 }
 
 void

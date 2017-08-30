@@ -1,8 +1,8 @@
 //
 // a simple generic bucket hash implementation
 //
-#ifndef __HASH_DEF_H__
-#define __HASH_DEF_H__
+#ifndef __BHASH_DEF_H__
+#define __BHASH_DEF_H__
 
 #include <stdio.h>
 #include <stdint.h>
@@ -11,7 +11,7 @@
 /**
  * a structure for hash element
  */
-typedef struct hash_element
+typedef struct bhash_element
 {
    struct list_head  lh;         /** a list for buck hash list management */
 } BHashElement;
@@ -41,4 +41,4 @@ extern int32_t bhash_add(BHashContext* hash, void* element);
 extern void* bhash_lookup(BHashContext* hash, void* key);
 extern int32_t bhash_del(BHashContext* hash, void* key);
 
-#endif //!__HASH_DEF_H__
+#endif //!__BHASH_DEF_H__
