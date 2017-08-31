@@ -18,8 +18,8 @@ TARGET = stm32f103c8t6_base
 # debug build?
 DEBUG = 1
 # optimization
-OPT = -O0
-#OPT = -Og
+#OPT = -O0
+OPT = -Og
 
 
 #######################################

@@ -20,10 +20,16 @@ static IRQn_Type              _irqn  = USB_LP_CAN1_RX0_IRQn;
 static CircBuffer             _rx_cb;
 static volatile uint8_t       _rx_buffer[CLI_RX_BUFFER_LENGTH];
 static ShellIntf              _shell_usb_if;
+static volatile bool          _initialized = false;
 
 void
 shell_if_usb_rx_notify(uint8_t* buf, uint32_t len)
 {
+  if(!_initialized) 
+  {
+    return;
+  }
+
   //
   // runs in IRQ context
   //
@@ -102,4 +108,6 @@ shell_if_usb_init(void)
 
   shell_if_register(&_shell_usb_if);
   event_register_handler(shell_if_usb_event_handler, DISPATCH_EVENT_USB_CLI_RX);
+
+  _initialized = true;
 }
