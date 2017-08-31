@@ -161,7 +161,8 @@ AS_DEFS =
 C_DEFS =  									\
 -DUSE_HAL_DRIVER 						\
 -DSTM32F103xB								\
--DBMP180_API
+-DBMP180_API								\
+-DUSE_QMC5883_MAG
 
 
 # AS includes
