@@ -11,7 +11,7 @@
 11> I2C                       => Done
 12> SPI                       => Done
 13> QMC5883L                  => Done
-14> BMP180
+14> BMP180                    => Done
 
 11> Start Up Hang Debug
 12> I2C Debug
