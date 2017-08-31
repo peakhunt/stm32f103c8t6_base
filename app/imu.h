@@ -3,5 +3,7 @@
 
 extern void imu_init(void);
 extern void imu_get_mag(float data[4]);
+extern void imu_get_accel(int16_t data[3]);
+extern void imu_get_gyro(int16_t data[3]);
 
 #endif /* !__IMU_DEF_H__ */

@@ -3,7 +3,6 @@
 #include "bmp180.h"
 
 #define C_BMP180_ONE_U8X        1
-#define BMP180_I2C_BUS          I2CBus_0
 
 #ifdef BMP180_API
 

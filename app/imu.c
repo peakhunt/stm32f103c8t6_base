@@ -2,6 +2,7 @@
 
 #include "app_common.h"
 #include "qmc5883.h"
+#include "mpu6050.h"
 #include "imu.h"
 #include "mainloop_timer.h"
 
@@ -28,7 +29,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 static SoftTimerElem      _sampling_timer;
+
 static qmc5883Mag         _mag;
+static MPU6050_t          _mpu6050;       // mpu6050 core
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -38,7 +41,9 @@ static qmc5883Mag         _mag;
 static void
 imu_read(SoftTimerElem* te)
 {
+  mpu6050_read_all(&_mpu6050);
   qmc5883_read(&_mag);
+
   mainloop_timer_schedule(&_sampling_timer, IMU_SAMPLE_INTERVAL);
 }
 
@@ -51,6 +56,9 @@ void
 imu_init(void)
 {
   qmc5883_init(&_mag, QMC5883_ADDRESS_MAG);
+
+  mpu6050_init(&_mpu6050, MPU6050_Accelerometer_8G, MPU6050_Gyroscope_500s);
+  mpu6050_set_gyro_dlpf(&_mpu6050, 0);   // H/W gyro LPF in 256 Hz
 
   soft_timer_init_elem(&_sampling_timer);
   _sampling_timer.cb     = imu_read;
@@ -80,4 +88,20 @@ imu_get_mag(float data[4])
 
   // magnetic declination here is -7.68f
   data[3] =  h * TO_DEGREE - 7.68f;
+}
+
+void
+imu_get_accel(int16_t data[3])
+{
+  data[0] = _mpu6050.Accelerometer_X;
+  data[1] = _mpu6050.Accelerometer_Y;
+  data[2] = _mpu6050.Accelerometer_Z;
+}
+
+void
+imu_get_gyro(int16_t data[3])
+{
+  data[0] = _mpu6050.Gyroscope_X;
+  data[1] = _mpu6050.Gyroscope_Y;
+  data[2] = _mpu6050.Gyroscope_Z;
 }

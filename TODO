@@ -12,13 +12,16 @@
 12> SPI                       => Done
 13> QMC5883L                  => Done
 14> BMP180                    => Done
+15> Start Up Hang Debug       => Done
+    USB was causing constant ESOF interrupt.
+    Need to change USB DP pullup from 4.7K to 1.5K
+    Guess noise was the primary issue
+16> I2C Debug                 => Done
+    Guess too high pull-up register was causing the problem.
+    Passed 12 hour test with lesser pull-ups
+12> Accel/Gyro    I2C         => Done
 
-11> Start Up Hang Debug
-12> I2C Debug
-11> Barometer
-12> Accel/Gyro
-13> Magnetometer
+12> Accel/Gyro    SPI
+13> HMC5883L
+13> IMU
 14> AHRЅ
-9> startup hang debug
-   looks like this is boot0/1 pin issue.
-   let's see if this is true.

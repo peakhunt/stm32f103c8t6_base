@@ -14,6 +14,7 @@
 #include "pwm_out.h"
 #include "imu.h"
 #include "barometer.h"
+#include "mpu6050.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -49,6 +50,7 @@ static void shell_command_micros_test(ShellIntf* intf, int argc, const char** ar
 static void shell_command_pwm_out(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_mag_data(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_bmp180(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_mpu6050(ShellIntf* intf, int argc, const char** argv);
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -98,6 +100,11 @@ static ShellCommand     _commands[] =
     "bmp180",
     "display bmp180 data",
     shell_command_bmp180,
+  },
+  {
+    "mpu6050",
+    "display mpu6050 data",
+    shell_command_mpu6050,
   },
 };
 
@@ -209,6 +216,18 @@ shell_command_bmp180(ShellIntf* intf, int argc, const char** argv)
   shell_printf(intf, "Raw Pres   : %ld Pa\r\n", barometer_get_pressure());
   shell_printf(intf, "Temperature: %.2f C\r\n", barometer_get_temperature()/10.0f);
   shell_printf(intf, "Pressure   : %.2f mBar\r\n", barometer_get_pressure()/100.0f);
+}
+
+static void
+shell_command_mpu6050(ShellIntf* intf, int argc, const char** argv)
+{
+  int16_t   data[3];
+
+  imu_get_accel(data);
+  shell_printf(intf, "Accel X: %d, Y: %d, Z: %d\r\n", data[0], data[1], data[2]);
+
+  imu_get_gyro(data);
+  shell_printf(intf, "Gyro  X: %d, Y: %d, Z: %d\r\n", data[0], data[1], data[2]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
