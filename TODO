@@ -10,7 +10,11 @@
 10> shell uart hang debug     => Done
 11> I2C                       => Done
 12> SPI                       => Done
+13> QMC5883L                  => Done
+14> BMP180
 
+11> Start Up Hang Debug
+12> I2C Debug
 11> Barometer
 12> Accel/Gyro
 13> Magnetometer

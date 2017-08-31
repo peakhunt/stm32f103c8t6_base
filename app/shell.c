@@ -13,6 +13,7 @@
 #include "micros.h"
 #include "pwm_out.h"
 #include "imu.h"
+#include "barometer.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -47,6 +48,7 @@ static void shell_command_micros(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_micros_test(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_pwm_out(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_mag_data(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_bmp180(ShellIntf* intf, int argc, const char** argv);
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -91,6 +93,11 @@ static ShellCommand     _commands[] =
     "mag_data",
     "read mag compass data",
     shell_command_mag_data,
+  },
+  {
+    "bmp180",
+    "display bmp180 data",
+    shell_command_bmp180,
   },
 };
 
@@ -195,6 +202,14 @@ shell_command_mag_data(ShellIntf* intf, int argc, const char** argv)
   shell_printf(intf, "O: %.2f\r\n", data[3]);
 }
 
+static void
+shell_command_bmp180(ShellIntf* intf, int argc, const char** argv)
+{
+  shell_printf(intf, "Raw Temp   : %ld C(0.1)\r\n", barometer_get_temperature());
+  shell_printf(intf, "Raw Pres   : %ld Pa\r\n", barometer_get_pressure());
+  shell_printf(intf, "Temperature: %.2f C\r\n", barometer_get_temperature()/10.0f);
+  shell_printf(intf, "Pressure   : %.2f mBar\r\n", barometer_get_pressure()/100.0f);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //

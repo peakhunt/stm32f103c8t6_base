@@ -12,6 +12,7 @@
 #include "i2c_bus.h"
 #include "ws2812b.h"
 #include "imu.h"
+#include "barometer.h"
 
 void
 app_init_f(void)
@@ -34,6 +35,7 @@ app_init_r(void)
 
   ws2812b_init();
   imu_init();
+  barometer_init();
 }
 
 void

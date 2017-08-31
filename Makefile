@@ -104,7 +104,10 @@ $(APP_DIR)/spi_bus.c								\
 $(APP_DIR)/ws2812b.c								\
 $(APP_DIR)/hmc5883.c								\
 $(APP_DIR)/qmc5883.c								\
+$(APP_DIR)/bmp180.c									\
+$(APP_DIR)/bmp180_support.c					\
 $(APP_DIR)/imu.c										\
+$(APP_DIR)/barometer.c							\
 $(APP_DIR)/app.c
 
 
@@ -154,9 +157,10 @@ MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI)
 AS_DEFS = 
 
 # C defines
-C_DEFS =  \
--DUSE_HAL_DRIVER \
--DSTM32F103xB
+C_DEFS =  									\
+-DUSE_HAL_DRIVER 						\
+-DSTM32F103xB								\
+-DBMP180_API
 
 
 # AS includes
