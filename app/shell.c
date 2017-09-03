@@ -15,6 +15,7 @@
 #include "imu.h"
 #include "barometer.h"
 #include "mpu6050.h"
+#include "i2c_bus.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -51,6 +52,7 @@ static void shell_command_pwm_out(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_mag_data(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_bmp180(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_mpu6050(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_i2c_stat(ShellIntf* intf, int argc, const char** argv);
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -105,6 +107,11 @@ static ShellCommand     _commands[] =
     "mpu6050",
     "display mpu6050 data",
     shell_command_mpu6050,
+  },
+  {
+    "i2cstat",
+    "display i2c stat",
+    shell_command_i2c_stat,
   },
 };
 
@@ -228,6 +235,22 @@ shell_command_mpu6050(ShellIntf* intf, int argc, const char** argv)
 
   imu_get_gyro(data);
   shell_printf(intf, "Gyro  X: %d, Y: %d, Z: %d\r\n", data[0], data[1], data[2]);
+}
+
+static void
+shell_command_i2c_stat(ShellIntf* intf, int argc, const char** argv)
+{
+  I2CBusStat* stat;
+
+  stat = i2c_bus_get_stat(I2CBus_0);
+  shell_printf(intf, "Bus1  num attempts: %lu\r\n", stat->num_attempt);
+  shell_printf(intf, "Bus1  num success:  %lu\r\n", stat->num_success);
+  shell_printf(intf, "Bus1  num failure:  %lu\r\n", stat->num_failure);
+
+  stat = i2c_bus_get_stat(I2CBus_1);
+  shell_printf(intf, "Bus2  num attempts: %lu\r\n", stat->num_attempt);
+  shell_printf(intf, "Bus2  num success:  %lu\r\n", stat->num_success);
+  shell_printf(intf, "Bus2  num failure:  %lu\r\n", stat->num_failure);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

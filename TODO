@@ -21,10 +21,9 @@
     Passed 12 hour test with lesser pull-ups
 12> Accel/Gyro    I2C         => Done
 
-
-
 ================================================================================
 12> Accel/Gyro    SPI
 13> HMC5883L
 13> IMU
 14> AHRЅ
+15> GPS 

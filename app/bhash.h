@@ -17,7 +17,7 @@ typedef struct bhash_element
 } BHashElement;
 
 /**
- * common hash prototype 
+ * common hash prototype
  */
 typedef uint32_t (*hash_func)(uint8_t* key, int32_t key_size);
 
