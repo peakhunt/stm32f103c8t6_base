@@ -14,9 +14,10 @@ typedef enum
 
 typedef struct
 {
-  uint32_t        num_attempt;
-  uint32_t        num_success;
-  uint32_t        num_failure;
+  uint32_t        num_read;
+  uint32_t        num_read_fail;
+  uint32_t        num_write;
+  uint32_t        num_write_fail;
 } I2CBusStat;
 
 typedef uint8_t I2CSlaveAddress;

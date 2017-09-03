@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include "stm32f1xx_hal.h"
 
 #define bool      uint8_t
 #define true      1

@@ -64,6 +64,9 @@ imu_read(SoftTimerElem* te)
 void
 imu_init(void)
 {
+  // wait 10ms for the sensor to initialize properly
+  HAL_Delay(10);
+
 #ifdef USE_QMC5883_MAG
   qmc5883_init(&_mag, QMC5883_ADDRESS_MAG);
 #else

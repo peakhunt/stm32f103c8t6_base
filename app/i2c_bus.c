@@ -50,15 +50,14 @@ i2c_bus_write_sync(I2CBusNumber bus, I2CSlaveAddress  addr, uint8_t* data, uint1
   I2C_HandleTypeDef*    hi2c = get_i2c_handle(bus);
   HAL_StatusTypeDef     ret;
 
-  _bus_stat[bus].num_attempt++;
+  _bus_stat[bus].num_write++;
 
   ret = HAL_I2C_Master_Transmit(hi2c, (addr << 1), data, len, I2C_DEFAULT_TIMEOUT);
   if(ret != HAL_OK)
   {
-    _bus_stat[bus].num_failure++;
+    _bus_stat[bus].num_write_fail++;
     return false;
   }
-  _bus_stat[bus].num_success++;
   return true;
 }
 
@@ -70,23 +69,20 @@ i2c_bus_write_read(I2CBusNumber bus, I2CSlaveAddress  addr,
   I2C_HandleTypeDef*    hi2c = get_i2c_handle(bus);
   HAL_StatusTypeDef     ret;
 
-  _bus_stat[bus].num_attempt++;
+  _bus_stat[bus].num_write++;
   ret = HAL_I2C_Master_Transmit(hi2c, (addr << 1), wdata, wdata_len, I2C_DEFAULT_TIMEOUT);
   if(ret != HAL_OK)
   {
-    _bus_stat[bus].num_failure++;
+    _bus_stat[bus].num_write_fail++;
     return false;
   }
-  _bus_stat[bus].num_success++;
 
-  _bus_stat[bus].num_attempt++;
+  _bus_stat[bus].num_read++;
   if(HAL_I2C_Master_Receive(hi2c, (addr << 1), rdata, rdata_len, I2C_DEFAULT_TIMEOUT) != HAL_OK)
   {
-    _bus_stat[bus].num_failure++;
+    _bus_stat[bus].num_read_fail++;
     return false;
   }
-
-  _bus_stat[bus].num_success++;
   return true;
 }
 
@@ -96,15 +92,14 @@ i2c_bus_read_sync(I2CBusNumber bus, I2CSlaveAddress addr, uint8_t* data, uint16_
   I2C_HandleTypeDef*    hi2c = get_i2c_handle(bus);
   HAL_StatusTypeDef     ret;
 
-  _bus_stat[bus].num_attempt++;
+  _bus_stat[bus].num_read++;
 
   ret = HAL_I2C_Master_Receive(hi2c, (addr << 1), data, len, I2C_DEFAULT_TIMEOUT);
   if(ret != HAL_OK)
   {
-    _bus_stat[bus].num_failure++;
+    _bus_stat[bus].num_read_fail++;
     return false;
   }
-  _bus_stat[bus].num_success++;
   return true;
 }
 

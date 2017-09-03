@@ -243,14 +243,16 @@ shell_command_i2c_stat(ShellIntf* intf, int argc, const char** argv)
   I2CBusStat* stat;
 
   stat = i2c_bus_get_stat(I2CBus_0);
-  shell_printf(intf, "Bus1  num attempts: %lu\r\n", stat->num_attempt);
-  shell_printf(intf, "Bus1  num success:  %lu\r\n", stat->num_success);
-  shell_printf(intf, "Bus1  num failure:  %lu\r\n", stat->num_failure);
+  shell_printf(intf, "Bus1  num read       : %lu\r\n", stat->num_read);
+  shell_printf(intf, "Bus1  num read fail  : %lu\r\n", stat->num_read_fail);
+  shell_printf(intf, "Bus1  num write      : %lu\r\n", stat->num_write);
+  shell_printf(intf, "Bus1  num write fail : %lu\r\n", stat->num_write_fail);
 
   stat = i2c_bus_get_stat(I2CBus_1);
-  shell_printf(intf, "Bus2  num attempts: %lu\r\n", stat->num_attempt);
-  shell_printf(intf, "Bus2  num success:  %lu\r\n", stat->num_success);
-  shell_printf(intf, "Bus2  num failure:  %lu\r\n", stat->num_failure);
+  shell_printf(intf, "Bus2  num read       : %lu\r\n", stat->num_read);
+  shell_printf(intf, "Bus2  num read fail  : %lu\r\n", stat->num_read_fail);
+  shell_printf(intf, "Bus2  num write      : %lu\r\n", stat->num_write);
+  shell_printf(intf, "Bus2  num write fail : %lu\r\n", stat->num_write_fail);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
