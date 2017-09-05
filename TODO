@@ -20,10 +20,11 @@
     Guess too high pull-up register was causing the problem.
     Passed 12 hour test with lesser pull-ups
 12> Accel/Gyro    I2C         => Done
+13> IMU                       => Done
+14> AHRЅ                      => Done
 
 ================================================================================
 12> Accel/Gyro    SPI
 13> HMC5883L
-13> IMU
-14> AHRЅ
 15> GPS 
+16> Gyro/Accel/Mag calibration
