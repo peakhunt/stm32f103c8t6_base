@@ -53,6 +53,7 @@ static void shell_command_mag_data(ShellIntf* intf, int argc, const char** argv)
 static void shell_command_bmp180(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_mpu6050(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_i2c_stat(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_imu(ShellIntf* intf, int argc, const char** argv);
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -112,6 +113,11 @@ static ShellCommand     _commands[] =
     "i2cstat",
     "display i2c stat",
     shell_command_i2c_stat,
+  },
+  {
+    "imu",
+    "display imu info",
+    shell_command_imu,
   },
 };
 
@@ -256,6 +262,23 @@ shell_command_i2c_stat(ShellIntf* intf, int argc, const char** argv)
   shell_printf(intf, "Bus2  num read fail  : %lu\r\n", stat->num_read_fail);
   shell_printf(intf, "Bus2  num write      : %lu\r\n", stat->num_write);
   shell_printf(intf, "Bus2  num write fail : %lu\r\n", stat->num_write_fail);
+}
+
+static void
+shell_command_imu(ShellIntf* intf, int argc, const char** argv)
+{
+  float   mahony[3],
+          madgwick[3];
+
+  imu_get_pitch_roll_yaw(mahony, madgwick);
+
+  shell_printf(intf, "Mahony Pitch : %.2f\r\n", mahony[0]);
+  shell_printf(intf, "Mahony Roll  : %.2f\r\n", mahony[1]);
+  shell_printf(intf, "Mahony Yaw   : %.2f\r\n", mahony[2]);
+
+  shell_printf(intf, "Madgwick Pitch : %.2f\r\n", madgwick[0]);
+  shell_printf(intf, "Madgwick Roll  : %.2f\r\n", madgwick[1]);
+  shell_printf(intf, "Madgwick Yaw   : %.2f\r\n", madgwick[2]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

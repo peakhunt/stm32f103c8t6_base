@@ -200,3 +200,10 @@ imu_get_gyro(int16_t data[3], float fdata[3])
   fdata[1] = _mpu6050.Gyroscope_Y * _mpu6050.Gyro_Mult;
   fdata[2] = _mpu6050.Gyroscope_Z * _mpu6050.Gyro_Mult;
 }
+
+void
+imu_get_pitch_roll_yaw(float mahony[3], float madgwick[3])
+{
+  mahony_get_pitch_roll_yaw(&_mahony_ahrs, mahony);
+  madgwick_get_pitch_roll_yaw(madgwick);
+}
