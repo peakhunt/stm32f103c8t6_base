@@ -6,6 +6,8 @@
 #include "mpu6050.h"
 #include "imu.h"
 #include "mainloop_timer.h"
+#include "madgwick.h"
+#include "mahony.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -14,7 +16,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #define IMU_SAMPLE_INTERVAL                 4         // mms. 200 Hz
-#define IMU_SAMPLE_FREQUENCY                (1000/IMU_SAMPLE_INTERVAL)
+#define IMU_SAMPLE_FREQUENCY                (1000.0f/IMU_SAMPLE_INTERVAL)
 
 #define TO_DEGREE   (180 / M_PI)
 #define WEIGHT_G    (0.93)
@@ -38,6 +40,52 @@ static hmc5883Mag         _mag;
 #endif
 static MPU6050_t          _mpu6050;       // mpu6050 core
 
+static Mahony             _mahony_ahrs;
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// AHRS related
+//
+////////////////////////////////////////////////////////////////////////////////
+static void
+ahrs_init(void)
+{
+  madgwick_init(IMU_SAMPLE_FREQUENCY);
+  mahony_init(&_mahony_ahrs, IMU_SAMPLE_FREQUENCY);
+}
+
+static void
+ahrs_update(void)
+{
+  float     gx, gy, gz;
+  float     ax, ay, az;
+  float     mx, my, mz;
+
+  gx =  _mpu6050.Gyroscope_X * _mpu6050.Gyro_Mult;
+  gy =  _mpu6050.Gyroscope_Y * _mpu6050.Gyro_Mult;
+  gz =  _mpu6050.Gyroscope_Z * _mpu6050.Gyro_Mult;
+
+  ax =  _mpu6050.Accelerometer_X * _mpu6050.Acce_Mult;
+  ay =  _mpu6050.Accelerometer_Y * _mpu6050.Acce_Mult;
+  az =  _mpu6050.Accelerometer_Z * _mpu6050.Acce_Mult;
+
+  mx = _mag.rx * _mag.multi_factor;
+  my = _mag.ry * _mag.multi_factor;
+  mz = _mag.rz * _mag.multi_factor;
+
+  madgwick_update(
+      gx, gy, gz,       // gyro
+      ax, ay, az,       // accel
+      mx, my, mz        // mag
+  );
+
+  mahony_update(&_mahony_ahrs,
+      gx, gy, gz,       // gyro
+      ax, ay, az,       // accel
+      mx, my, mz        // mag
+  );
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 // sampling timer callback
@@ -47,11 +95,14 @@ static void
 imu_read(SoftTimerElem* te)
 {
   mpu6050_read_all(&_mpu6050);
+
 #ifdef USE_QMC5883_MAG
   qmc5883_read(&_mag);
 #else
   hmc5883_read(&_mag);
 #endif
+
+  ahrs_update();
 
   mainloop_timer_schedule(&_sampling_timer, IMU_SAMPLE_INTERVAL);
 }
@@ -78,6 +129,8 @@ imu_init(void)
 
   soft_timer_init_elem(&_sampling_timer);
   _sampling_timer.cb     = imu_read;
+
+  ahrs_init();
 
   mainloop_timer_schedule(&_sampling_timer, IMU_SAMPLE_INTERVAL);
 }

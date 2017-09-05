@@ -30,6 +30,7 @@ typedef struct
   float       z;
 } VectorFloat;
 
+#if 0 // original
 static inline float
 invSqrt(float x)
 {
@@ -44,6 +45,30 @@ invSqrt(float x)
   return y;
 
 }
+#else
+typedef union
+{
+  float   f;
+  long    l;
+} float_long_t;
+
+static inline float
+invSqrt(float x)
+{
+  float halfx = 0.5f * x;
+  float_long_t    y;  
+  float_long_t    i;
+
+  y.f = x;
+  i = y;
+
+  i.l = 0x5f3759df - (i.l>>1);
+  y = i;
+  y.f = y.f * (1.5f - (halfx * y.f * y.f));
+  y.f = y.f * (1.5f - (halfx * y.f * y.f));
+  return y.f;
+}
+#endif
 
 static inline bool
 float_zero(float x)
