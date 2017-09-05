@@ -6,9 +6,9 @@
 
 #include "list.h"
 
-typedef struct __shell_intef ShellIntf;
+typedef struct __shell_intf ShellIntf;
 
-struct __shell_intef
+struct __shell_intf
 {
   uint8_t   cmd_buffer_ndx;
   int8_t    cmd_buffer[SHELL_MAX_COMMAND_LEN + 1];

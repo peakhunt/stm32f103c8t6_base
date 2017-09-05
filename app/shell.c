@@ -229,12 +229,15 @@ static void
 shell_command_mpu6050(ShellIntf* intf, int argc, const char** argv)
 {
   int16_t   data[3];
+  float     fdata[3];
 
-  imu_get_accel(data);
-  shell_printf(intf, "Accel X: %d, Y: %d, Z: %d\r\n", data[0], data[1], data[2]);
+  imu_get_accel(data, fdata);
+  shell_printf(intf, "Accel X: %.2f, Y: %.2f, Z: %.2fd\r\n",
+      fdata[0], fdata[1], fdata[2]);
 
-  imu_get_gyro(data);
-  shell_printf(intf, "Gyro  X: %d, Y: %d, Z: %d\r\n", data[0], data[1], data[2]);
+  imu_get_gyro(data, fdata);
+  shell_printf(intf, "Gyro  X: %.2f, Y: %.2f, Z: %.2f\r\n",
+      fdata[0], fdata[1], fdata[2]);
 }
 
 static void

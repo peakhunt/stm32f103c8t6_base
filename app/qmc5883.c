@@ -53,21 +53,25 @@ qmc5883_init(qmc5883Mag* mag, uint8_t address)
   mag->ry   = 0.0f;
   mag->rz   = 0.0f;
 
-  mag->gx   = 0.0f;
-  mag->gy   = 0.0f;
-  mag->gz   = 0.0f;
-
   //
   // configure magnetometer as
   // Mode : Confinuous (01)
   // output data rate : 100 Hz (10)
   // full scale       : 2G (00);
   // over sample ratio: 512
+  //
   config = 0x01;          // mode
   config |= (0x03 << 2);  // output data rate
   config |= (0x00 << 4);  // full scale
   config |= (0x00 << 6);  // oversample ratio
+
   qmc5883_write_reg(mag, QMC5883_REGISTER_MAG_CTRL_REG1,  config);
+
+  //
+  // FIXME calculate multi_factor to convert raw to gauss
+  //
+  mag->multi_factor = 1.0f/12000;     // in 2G range, 12000 is 1 Gauss
+                                      // in 8G ramge 3000 is 1 Gauss
 }
 
 void
@@ -80,8 +84,4 @@ qmc5883_read(qmc5883Mag* mag)
   mag->rx   = (int16_t)(data[0] | ((int16_t)(data[1] << 8)));
   mag->ry   = (int16_t)(data[2] | ((int16_t)(data[3] << 8)));
   mag->rz   = (int16_t)(data[4] | ((int16_t)(data[5] << 8)));
-
-  mag->gx   = mag->rx;
-  mag->gy   = mag->ry;
-  mag->gz   = mag->rz;
 }

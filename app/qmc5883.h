@@ -21,13 +21,11 @@ typedef enum
 
 typedef struct qmc5883Mag_s
 {
-  float rx;       // raw x
-  float ry;       // raw y
-  float rz;       // raw y
+  int16_t rx;     // raw x
+  int16_t ry;     // raw y
+  int16_t rz;     // raw y
 
-  float gx;       // gained x
-  float gy;       // gained y
-  float gz;       // gained z
+  float multi_factor;     // number to convert raw value to gauss
 
   uint8_t             address;
 } qmc5883Mag;
