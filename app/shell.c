@@ -46,6 +46,7 @@ static void shell_printf(ShellIntf* intf, const char* fmt, ...) __attribute__((f
 
 static void shell_command_help(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_version(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_uptime(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_micros(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_micros_test(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_pwm_out(ShellIntf* intf, int argc, const char** argv);
@@ -78,6 +79,11 @@ static ShellCommand     _commands[] =
     "version",
     "show version",
     shell_command_version,
+  },
+  {
+    "uptime",
+    "show system uptime",
+    shell_command_uptime,
   },
   {
     "micros",
@@ -145,6 +151,13 @@ shell_command_version(ShellIntf* intf, int argc, const char** argv)
 {
   shell_printf(intf, "\r\n");
   shell_printf(intf, "%s\r\n", VERSION);
+}
+
+static void
+shell_command_uptime(ShellIntf* intf, int argc, const char** argv)
+{
+  shell_printf(intf, "\r\n");
+  shell_printf(intf, "System Uptime: %lu\r\n", __uptime);
 }
 
 static void
