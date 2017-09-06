@@ -21,5 +21,6 @@ extern void mahony_update(Mahony* mahony,
 extern void mahony_compute_angle(Mahony* mahony);
 extern void mahony_get_pitch_roll_yaw(Mahony* mahony, float data[3]);
 extern void mahony_get_pitch_roll_yaw_radian(Mahony* mahony, float data[3]);
+extern void mahony_get_quaternion(Mahony* mahony, float data[4]);
 
 #endif //!__MAHONY_DEF_H__

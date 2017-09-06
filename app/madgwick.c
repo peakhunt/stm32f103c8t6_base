@@ -35,6 +35,11 @@ madgwick_update(float gx, float gy, float gz,
 		return;
 	}
 
+  // Convert gyroscope degrees/sec to radians/sec
+  gx *= 0.0174533f;
+  gy *= 0.0174533f;
+  gz *= 0.0174533f;
+
 	// Rate of change of quaternion from gyroscope
 	qDot1 = 0.5f * (-q1 * gx - q2 * gy - q3 * gz);
 	qDot2 = 0.5f * (q0 * gx + q2 * gz - q3 * gy);
@@ -205,12 +210,12 @@ madgwick_updateIMU(float gx, float gy, float gz,
 void
 madgwick_get_pitch_roll_yaw(float data[3])
 {
-#if 0
+#if 1
   float roll, pitch, yaw;
 
   roll  = atan2f(q0 * q1 + q2 * q3, 0.5f - q1 *q1 - q2 * q2);
-  //pitch = asinf(-2.0f * (q1 * q3 - q0 * q2));
-  pitch = 0.5f * M_PI - acosf(-2.0f * (q1 * q3 - q0 * q2));
+  pitch = asinf(-2.0f * (q1 * q3 - q0 * q2));
+  //pitch = 0.5f * M_PI - acosf(-2.0f * (q1 * q3 - q0 * q2));
   yaw   = atan2f(q1 * q2 + q0 * q3, 0.5f - q2 * q2 - q3 * q3);
 #else
   float roll, pitch, yaw;

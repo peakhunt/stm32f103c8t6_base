@@ -54,11 +54,16 @@ mahony_update(Mahony* mahony,
 	float qa, qb, qc;
 
 	// Use IMU algorithm if magnetometer measurement invalid (avoids NaN in magnetometer normalisation)
-	if(float_zero(mx) && float_zero(my) && float_zero(mz))
+  if(float_zero(mx) && float_zero(my) && float_zero(mz))
 	{
 		mahony_updateIMU(mahony, gx, gy, gz, ax, ay, az);
 		return;
 	}
+
+  // convert gyroscope degrees/sec to radians/sec
+  gx *= 0.0174533f;
+  gy *= 0.0174533f;
+  gz *= 0.0174533f;
 
 	// Compute feedback only if accelerometer measurement valid (avoids NaN in accelerometer normalisation)
 	if(!(float_zero(ax) && float_zero(ay) && float_zero(az)))
@@ -269,4 +274,13 @@ mahony_get_pitch_roll_yaw_radian(Mahony* mahony, float data[3])
   data[0] = mahony->pitch;
   data[1] = mahony->roll;
   data[2] = mahony->yaw;
+}
+
+void
+mahony_get_quaternion(Mahony* mahony, float data[4])
+{
+  data[0] = mahony->q0;
+  data[1] = mahony->q1;
+  data[2] = mahony->q2;
+  data[3] = mahony->q3;
 }
