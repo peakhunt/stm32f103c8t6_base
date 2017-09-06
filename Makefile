@@ -5,6 +5,11 @@
 #	2017-02-10 - Several enhancements + project update mode
 #   2015-07-22 - first version
 # ------------------------------------------------
+#
+######################################
+# host os
+######################################
+OS := $(shell uname)
 
 ######################################
 # target
@@ -131,7 +136,14 @@ PERIFLIB_SOURCES =
 #######################################
 # binaries
 #######################################
+ifeq ($(OS),Darwin)
 BINPATH = /Users/hawk/toolchains/gcc-arm-none-eabi-5_4-2016q3/bin
+STLINKPATH= /opt/local/bin
+else
+BINPATH = /home/hawk/tools/toolchains/cortex-m/gcc-arm-none-eabi-4_9-2014q4/bin
+STLINKPATH= ~/stlink
+endif
+
 PREFIX = arm-none-eabi-
 CC = $(BINPATH)/$(PREFIX)gcc
 AS = $(BINPATH)/$(PREFIX)gcc -x assembler-with-cpp
@@ -252,7 +264,7 @@ clean:
 # flash
 #######################################
 flash: $(BUILD_DIR)/$(TARGET).bin
-	st-flash write $< 0x08000000
+	$(STLINKPATH)/st-flash write $< 0x08000000
 
 #######################################
 # openocd
