@@ -240,7 +240,7 @@ mahony_updateIMU(Mahony* mahony, float gx, float gy, float gz,
 void
 mahony_compute_angle(Mahony* mahony)
 {
-#if 0
+#if 1
   mahony->roll  = atan2f(mahony->q0 * mahony->q1 + mahony->q2 * mahony->q3,
                         0.5f - mahony->q1 *mahony->q1 - mahony->q2 * mahony->q2);
   mahony->pitch = asinf(-2.0f * (mahony->q1 * mahony->q3 - mahony->q0 * mahony->q2));

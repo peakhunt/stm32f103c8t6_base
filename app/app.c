@@ -34,7 +34,10 @@ app_init_r(void)
   __enable_irq();
 
   ws2812b_init();
-  imu_init();
+
+  imu_init(imu_get_instance(0));
+  imu_start(imu_get_instance(0));
+
   barometer_init();
 }
 

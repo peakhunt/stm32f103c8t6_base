@@ -227,7 +227,7 @@ shell_command_mag_data(ShellIntf* intf, int argc, const char** argv)
 {
   float data[4];
 
-  imu_get_mag(data);
+  imu_get_mag(imu_get_instance(0), data);
 
   shell_printf(intf, "X: %.2f\r\n", data[0]);
   shell_printf(intf, "Y: %.2f\r\n", data[1]);
@@ -250,11 +250,11 @@ shell_command_mpu6050(ShellIntf* intf, int argc, const char** argv)
   int16_t   data[3];
   float     fdata[3];
 
-  imu_get_accel(data, fdata);
+  imu_get_accel(imu_get_instance(0), data, fdata);
   shell_printf(intf, "Accel X: %.2f, Y: %.2f, Z: %.2fd\r\n",
       fdata[0], fdata[1], fdata[2]);
 
-  imu_get_gyro(data, fdata);
+  imu_get_gyro(imu_get_instance(0), data, fdata);
   shell_printf(intf, "Gyro  X: %.2f, Y: %.2f, Z: %.2f\r\n",
       fdata[0], fdata[1], fdata[2]);
 }
@@ -283,7 +283,7 @@ shell_command_imu(ShellIntf* intf, int argc, const char** argv)
   float   mahony[3],
           madgwick[3];
 
-  imu_get_pitch_roll_yaw(mahony, madgwick);
+  imu_get_pitch_roll_yaw(imu_get_instance(0), mahony, madgwick);
 
   shell_printf(intf, "Mahony Pitch : %.2f\r\n", mahony[0]);
   shell_printf(intf, "Mahony Roll  : %.2f\r\n", mahony[1]);
