@@ -217,7 +217,7 @@ imu_calibration_accel_perform(void (*calib_done)(void*), void* arg)
   _calib_timer.cb         = imu_calib_accel_done;
 
   mainloop_timer_schedule(&_sampling_timer, IMU_CALIB_SAMPLE_INTERVAL);
-  mainloop_timer_schedule(&_sampling_timer, IMU_CALIB_TOTAL_PERIOD);
+  mainloop_timer_schedule(&_calib_timer, IMU_CALIB_TOTAL_PERIOD);
 }
 
 void
@@ -245,5 +245,5 @@ imu_calibration_mag_perform(void (*calib_done)(void*), void* arg)
   _calib_timer.cb         = imu_calib_mag_done;
 
   mainloop_timer_schedule(&_sampling_timer, IMU_CALIB_SAMPLE_INTERVAL);
-  mainloop_timer_schedule(&_sampling_timer, IMU_CALIB_TOTAL_PERIOD);
+  mainloop_timer_schedule(&_calib_timer, IMU_CALIB_TOTAL_PERIOD);
 }
