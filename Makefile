@@ -114,6 +114,7 @@ $(APP_DIR)/bmp180_support.c					\
 $(APP_DIR)/mpu6050.c								\
 $(APP_DIR)/mpu6500_spi.c						\
 $(APP_DIR)/imu.c										\
+$(APP_DIR)/imu_calibration.c				\
 $(APP_DIR)/barometer.c							\
 $(APP_DIR)/mahony.c									\
 $(APP_DIR)/madgwick.c								\

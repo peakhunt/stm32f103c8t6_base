@@ -13,6 +13,7 @@
 #include "micros.h"
 #include "pwm_out.h"
 #include "imu.h"
+#include "imu_calibration.h"
 #include "barometer.h"
 #include "mpu6050.h"
 #include "i2c_bus.h"
@@ -55,6 +56,8 @@ static void shell_command_bmp180(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_mpu6050(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_i2c_stat(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_imu(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_accel_calib(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_mag_calib(ShellIntf* intf, int argc, const char** argv);
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -125,7 +128,28 @@ static ShellCommand     _commands[] =
     "display imu info",
     shell_command_imu,
   },
+  {
+    "accel_cal",
+    "perform accelerometer calibration",
+    shell_command_accel_calib,
+  },
+  {
+    "mag_cal",
+    "perform magnetometer calibration",
+    shell_command_mag_calib,
+  },
 };
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// shell utilities
+//
+////////////////////////////////////////////////////////////////////////////////
+static inline void
+shell_prompt(ShellIntf* intf)
+{
+  intf->put_tx_data(intf, (uint8_t*)_prompt, sizeof(_prompt) -1);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -294,6 +318,65 @@ shell_command_imu(ShellIntf* intf, int argc, const char** argv)
   shell_printf(intf, "Madgwick Yaw   : %.2f\r\n", madgwick[2]);
 }
 
+static void
+accel_calib_done(void* arg)
+{
+  ShellIntf* intf = (ShellIntf*)arg;
+  int16_t   gyro[3],
+            accl[3];
+
+  shell_printf(intf, "\r\nDone Accelerometer Calibration\r\n");
+
+  imu_get_offset(imu_get_instance(0), gyro, accl);
+
+  shell_printf(intf, "Gyro Offset X : %d\r\n", gyro[0]);
+  shell_printf(intf, "Gyro Offset Y : %d\r\n", gyro[1]);
+  shell_printf(intf, "Gyro Offset Z : %d\r\n", gyro[2]);
+
+  shell_printf(intf, "Accl Offset X : %d\r\n", accl[0]);
+  shell_printf(intf, "Accl Offset Y : %d\r\n", accl[1]);
+  shell_printf(intf, "Accl Offset Z : %d\r\n", accl[2]);
+
+  shell_prompt(intf);
+}
+
+static void
+shell_command_accel_calib(ShellIntf* intf, int argc, const char** argv)
+{
+  shell_printf(intf, "Starting Accelerometer Calibration\r\n");
+  imu_calibration_init();
+  imu_calibration_accel_perform(accel_calib_done, intf);
+}
+
+static void
+mag_calib_done(void* arg)
+{
+  ShellIntf* intf = (ShellIntf*)arg;
+  int16_t     bias[3];
+  float       scale[3];
+
+  shell_printf(intf, "\r\nDone Magnetometer Calibration\r\n");
+
+  imu_get_mag_calib(imu_get_instance(0), bias, scale);
+
+  shell_printf(intf, "Mag Bias X : %d\r\n", bias[0]);
+  shell_printf(intf, "Mag Bias Y : %d\r\n", bias[1]);
+  shell_printf(intf, "Mag Bias Z : %d\r\n", bias[2]);
+
+  shell_printf(intf, "Mag Scale X : %.2f\r\n", scale[0]);
+  shell_printf(intf, "Mag Scale Y : %.2f\r\n", scale[1]);
+  shell_printf(intf, "Mag Scale Z : %.2f\r\n", scale[2]);
+  shell_prompt(intf);
+}
+
+static void
+shell_command_mag_calib(ShellIntf* intf, int argc, const char** argv)
+{
+  shell_printf(intf, "Starting Magnetometer Calibration\r\n");
+  imu_calibration_init();
+  imu_calibration_mag_perform(mag_calib_done, intf);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 // shell core
@@ -350,12 +433,6 @@ shell_printf(ShellIntf* intf, const char* fmt, ...)
   intf->put_tx_data(intf, (uint8_t*)_print_buffer, len);
 }
 
-
-static inline void
-shell_prompt(ShellIntf* intf)
-{
-  intf->put_tx_data(intf, (uint8_t*)_prompt, sizeof(_prompt) -1);
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 //

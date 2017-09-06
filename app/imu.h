@@ -35,6 +35,14 @@ extern void imu_get_gyro(IMU_t* imu, int16_t data[3], float fdata[3]);
 extern void imu_get_pitch_roll_yaw(IMU_t* imu, float mahony[3], float madgwick[3]);
 extern void imu_start(IMU_t* imu);
 extern void imu_stop(IMU_t* imu);
+extern void imu_set_offset(IMU_t* imu,
+    int16_t gx, int16_t gy, int16_t gz,
+    int16_t ax, int16_t ay, int16_t az);
+extern void imu_get_offset(IMU_t* imu, int16_t gyro[3], int16_t accl[3]);
+extern void imu_set_mag_calib(IMU_t* imu,
+    int16_t x_bias, int16_t y_bias, int16_t z_bias,
+    float x_scale, float y_scale, float z_scale);
+extern void imu_get_mag_calib(IMU_t* imu, int16_t bias[3], float scale[3]);
 extern IMU_t* imu_get_instance(int ndx);
 
 #endif /* !__IMU_DEF_H__ */

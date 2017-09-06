@@ -39,17 +39,17 @@ ahrs_update(IMU_t* imu)
   float     ax, ay, az;
   float     mx, my, mz;
 
-  gx =  imu->mpu6050.Gyroscope_X * imu->mpu6050.Gyro_Mult;
-  gy =  imu->mpu6050.Gyroscope_Y * imu->mpu6050.Gyro_Mult;
-  gz =  imu->mpu6050.Gyroscope_Z * imu->mpu6050.Gyro_Mult;
+  gx =  (imu->mpu6050.Gyroscope_X - imu->gyro_off[0]) * imu->mpu6050.Gyro_Mult;
+  gy =  (imu->mpu6050.Gyroscope_Y - imu->gyro_off[1]) * imu->mpu6050.Gyro_Mult;
+  gz =  (imu->mpu6050.Gyroscope_Z - imu->gyro_off[2]) * imu->mpu6050.Gyro_Mult;
 
-  ax =  imu->mpu6050.Accelerometer_X * imu->mpu6050.Acce_Mult;
-  ay =  imu->mpu6050.Accelerometer_Y * imu->mpu6050.Acce_Mult;
-  az =  imu->mpu6050.Accelerometer_Z * imu->mpu6050.Acce_Mult;
+  ax =  (imu->mpu6050.Accelerometer_X - imu->accl_off[0]) * imu->mpu6050.Acce_Mult;
+  ay =  (imu->mpu6050.Accelerometer_Y - imu->accl_off[1]) * imu->mpu6050.Acce_Mult;
+  az =  (imu->mpu6050.Accelerometer_Z - imu->accl_off[2]) * imu->mpu6050.Acce_Mult;
 
-  mx = imu->mag.rx * imu->mag.multi_factor;
-  my = imu->mag.ry * imu->mag.multi_factor;
-  mz = imu->mag.rz * imu->mag.multi_factor;
+  mx = (imu->mag_scale[0] * (imu->mag.rx - imu->mag_bias[0] )) * imu->mag.multi_factor;
+  my = (imu->mag_scale[1] * (imu->mag.ry - imu->mag_bias[1] )) * imu->mag.multi_factor;
+  mz = (imu->mag_scale[2] * (imu->mag.rz - imu->mag_bias[2] )) * imu->mag.multi_factor;
 
   madgwick_update(&imu->madgwick_ahrs,
       gx, gy, gz,       // gyro
@@ -196,6 +196,58 @@ void
 imu_stop(IMU_t* imu)
 {
   mainloop_timer_cancel(&imu->sampling_timer);
+}
+
+void
+imu_set_offset(IMU_t* imu,
+    int16_t gx, int16_t gy, int16_t gz,
+    int16_t ax, int16_t ay, int16_t az)
+{
+  imu->gyro_off[0] = gx;
+  imu->gyro_off[1] = gy;
+  imu->gyro_off[2] = gz;
+
+  imu->accl_off[0] = ax;
+  imu->accl_off[1] = ay;
+  imu->accl_off[2] = az;
+}
+
+void
+imu_set_mag_calib(IMU_t* imu,
+    int16_t x_bias, int16_t y_bias, int16_t z_bias,
+    float x_scale, float y_scale, float z_scale)
+{
+  imu->mag_bias[0] = x_bias;
+  imu->mag_bias[1] = y_bias;
+  imu->mag_bias[2] = z_bias;
+
+  imu->mag_scale[0] = x_scale;
+  imu->mag_scale[1] = y_scale;
+  imu->mag_scale[2] = z_scale;
+}
+
+void
+imu_get_offset(IMU_t* imu, int16_t gyro[3], int16_t accl[3])
+{
+  gyro[0] = imu->gyro_off[0];
+  gyro[1] = imu->gyro_off[1];
+  gyro[2] = imu->gyro_off[2];
+
+  accl[0] = imu->accl_off[0];
+  accl[1] = imu->accl_off[1];
+  accl[2] = imu->accl_off[2];
+}
+
+void
+imu_get_mag_calib(IMU_t* imu, int16_t bias[3], float scale[3])
+{
+  bias[0] = imu->mag_bias[0];
+  bias[1] = imu->mag_bias[1];
+  bias[2] = imu->mag_bias[2];
+
+  scale[0] = imu->mag_scale[0];
+  scale[1] = imu->mag_scale[1];
+  scale[2] = imu->mag_scale[2];
 }
 
 IMU_t*
