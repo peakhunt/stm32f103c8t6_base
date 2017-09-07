@@ -151,8 +151,6 @@ mahony_update(Mahony* mahony,
 	mahony->q1 *= recipNorm;
 	mahony->q2 *= recipNorm;
 	mahony->q3 *= recipNorm;
-
-  mahony_compute_angle(mahony);
 }
 
 void
@@ -232,48 +230,23 @@ mahony_updateIMU(Mahony* mahony, float gx, float gy, float gz,
   mahony->q1 *= recipNorm;
   mahony->q2 *= recipNorm;
   mahony->q3 *= recipNorm;
-
-  mahony_compute_angle(mahony);
 }
 
-
-void
-mahony_compute_angle(Mahony* mahony)
-{
-#if 1
-  mahony->roll  = atan2f(mahony->q0 * mahony->q1 + mahony->q2 * mahony->q3,
-                        0.5f - mahony->q1 *mahony->q1 - mahony->q2 * mahony->q2);
-  mahony->pitch = asinf(-2.0f * (mahony->q1 * mahony->q3 - mahony->q0 * mahony->q2));
-  mahony->yaw   = atan2f(mahony->q1 * mahony->q2 + mahony->q0 * mahony->q3,
-                        0.5f - mahony->q2 * mahony->q2 - mahony->q3 * mahony->q3);
-#else
-  float   a, b, c, d;
-
-  a = mahony->q0;
-  b = mahony->q1;
-  c = mahony->q2;
-  d = mahony->q3;
-
-  mahony->roll  =  atan2(2.0f * (a * b + c * d), (a * a - b * b - c * c + d * d));
-  mahony->pitch = -asin (2.0f * (b * d - a * c));
-  mahony->yaw   =  atan2(2.0f * (a * d + b * c), (a * a + b * b - c * c - d * d));
-#endif
-}
 
 void
 mahony_get_pitch_roll_yaw(Mahony* mahony, float data[3])
 {
-  data[0] = mahony->pitch * 57.29578f;
-  data[1] = mahony->roll * 57.29578f;
-  data[2] = mahony->yaw * 57.29578f + 180.0f;
-}
+  float roll, pitch, yaw;
 
-void
-mahony_get_pitch_roll_yaw_radian(Mahony* mahony, float data[3])
-{
-  data[0] = mahony->pitch;
-  data[1] = mahony->roll;
-  data[2] = mahony->yaw;
+  roll  = atan2f(mahony->q0 * mahony->q1 + mahony->q2 * mahony->q3,
+      0.5f - mahony->q1 *mahony->q1 - mahony->q2 * mahony->q2);
+  pitch = asinf(-2.0f * (mahony->q1 * mahony->q3 - mahony->q0 * mahony->q2));
+  yaw   = atan2f(mahony->q1 * mahony->q2 + mahony->q0 * mahony->q3,
+      0.5f - mahony->q2 * mahony->q2 - mahony->q3 * mahony->q3);
+
+  data[0] = pitch * 57.29578f;
+  data[1] = roll * 57.29578f;
+  data[2] = yaw * 57.29578f + 180.0f;
 }
 
 void
