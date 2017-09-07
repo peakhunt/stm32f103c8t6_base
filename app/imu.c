@@ -47,9 +47,20 @@ ahrs_update(IMU_t* imu)
   ay =  (imu->mpu6050.Accelerometer_Y - imu->accl_off[1]) * imu->mpu6050.Acce_Mult;
   az =  (imu->mpu6050.Accelerometer_Z - imu->accl_off[2]) * imu->mpu6050.Acce_Mult;
 
+  //
+  // https://edwardmallon.wordpress.com/2015/05/22/calibrating-any-compass-or-accelerometer-for-arduino/
+  //
+  // CalibratedData = ( unCalibratedData – Offset ) / Scaling Factor
+  //
+#if 0
   mx = (imu->mag_scale[0] * (imu->mag.rx - imu->mag_bias[0] )) * imu->mag.multi_factor;
   my = (imu->mag_scale[1] * (imu->mag.ry - imu->mag_bias[1] )) * imu->mag.multi_factor;
   mz = (imu->mag_scale[2] * (imu->mag.rz - imu->mag_bias[2] )) * imu->mag.multi_factor;
+#else
+  mx = ((imu->mag.rx - imu->mag_bias[0]) / imu->mag_scale[0]) * imu->mag.multi_factor;
+  my = ((imu->mag.ry - imu->mag_bias[1]) / imu->mag_scale[1]) * imu->mag.multi_factor;
+  mz = ((imu->mag.rz - imu->mag_bias[2]) / imu->mag_scale[2]) * imu->mag.multi_factor;
+#endif
 
   madgwick_update(&imu->madgwick_ahrs,
       gx, gy, gz,       // gyro
