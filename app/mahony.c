@@ -54,8 +54,8 @@ mahony_update(Mahony* mahony,
 	float qa, qb, qc;
 
 	// Use IMU algorithm if magnetometer measurement invalid (avoids NaN in magnetometer normalisation)
-  if(float_zero(mx) && float_zero(my) && float_zero(mz))
-	{
+	if((mx == 0.0f) && (my == 0.0f) && (mz == 0.0f))
+  {
 		mahony_updateIMU(mahony, gx, gy, gz, ax, ay, az);
 		return;
 	}
@@ -66,7 +66,7 @@ mahony_update(Mahony* mahony,
   gz *= 0.0174533f;
 
 	// Compute feedback only if accelerometer measurement valid (avoids NaN in accelerometer normalisation)
-	if(!(float_zero(ax) && float_zero(ay) && float_zero(az)))
+  if(!((ax == 0.0f) && (ay == 0.0f) && (az == 0.0f))) 
 	{
 		// Normalise accelerometer measurement
 		recipNorm = invSqrt(ax * ax + ay * ay + az * az);
@@ -171,7 +171,7 @@ mahony_updateIMU(Mahony* mahony, float gx, float gy, float gz,
 
   // Compute feedback only if accelerometer measurement valid
   // (avoids NaN in accelerometer normalisation)
-  if(!(float_zero(ax) && float_zero(ay) && float_zero(az))) 
+  if(!((ax == 0.0f) && (ay == 0.0f) && (az == 0.0f))) 
   {
     // Normalise accelerometer measurement
     recipNorm = invSqrt(ax * ax + ay * ay + az * az);

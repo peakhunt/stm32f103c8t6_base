@@ -36,7 +36,7 @@ madgwick_update(Madgwick* madgwick,
 	float _2q0mx, _2q0my, _2q0mz, _2q1mx, _2bx, _2bz, _4bx, _4bz, _2q0, _2q1, _2q2, _2q3, _2q0q2, _2q2q3, q0q0, q0q1, q0q2, q0q3, q1q1, q1q2, q1q3, q2q2, q2q3, q3q3;
 
 	// Use IMU algorithm if magnetometer measurement invalid (avoids NaN in magnetometer normalisation)
-	if(float_zero(mx) && float_zero(my) && float_zero(mz))
+  if((mx == 0.0f) && (my == 0.0f) && (mz == 0.0f)) 
 	{
 		madgwick_updateIMU(madgwick, gx, gy, gz, ax, ay, az);
 		return;
@@ -54,8 +54,7 @@ madgwick_update(Madgwick* madgwick,
 	qDot4 = 0.5f * (Q0 * gz + Q1 * gy - Q2 * gx);
 
 	// Compute feedback only if accelerometer measurement valid (avoids NaN in accelerometer normalisation)
-	if(!(float_zero(ax) && float_zero(ay) && float_zero(az))) {
-
+  if(!((ax == 0.0f) && (ay == 0.0f) && (az == 0.0f))) {
 		// Normalise accelerometer measurement
 		recipNorm = invSqrt(ax * ax + ay * ay + az * az);
 		ax *= recipNorm;
@@ -160,8 +159,8 @@ madgwick_updateIMU(Madgwick* madgwick,
   qDot4 = 0.5f * (Q0 * gz + Q1 * gy - Q2 * gx);
 
   // Compute feedback only if accelerometer measurement valid (avoids NaN in accelerometer normalisation)
-  if(!(float_zero(ax) && float_zero(ay) && float_zero(az))) {
-
+  if(!((ax == 0.0f) && (ay == 0.0f) && (az == 0.0f))) 
+  {
     // Normalise accelerometer measurement
     recipNorm = invSqrt(ax * ax + ay * ay + az * az);
     ax *= recipNorm;
