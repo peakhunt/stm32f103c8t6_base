@@ -93,12 +93,6 @@ imu_calib_accel_done(SoftTimerElem* te)
   ay = (int16_t)(_ay_sum / _sample_count);
   az = (int16_t)(_az_sum / _sample_count);
 
-  //
-  // just a Note here.
-  // The final calibrated mag reading should be calculated as
-  // mr = scale * ( raw - bias)
-  //
-
   imu_set_offset(_imu, gx, gy, gz, ax, ay, az);
 
   imu_start(_imu);
@@ -166,6 +160,8 @@ imu_calib_mag_done(SoftTimerElem* te)
   // The final calibrated mag reading should be calculated as
   // mr = scale * ( raw - bias)
   //
+  // https://github.com/kriswiner/MPU6050/wiki/Simple-and-Effective-Magnetometer-Calibration
+  // 
   imu_set_mag_calib(_imu, 
       _mx_bias, _my_bias, _mz_bias,
       _mx_scale, _my_scale, _mz_scale);

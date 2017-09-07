@@ -49,6 +49,8 @@ ahrs_update(IMU_t* imu)
 
   //
   // https://edwardmallon.wordpress.com/2015/05/22/calibrating-any-compass-or-accelerometer-for-arduino/
+  // https://github.com/kriswiner/MPU6050/wiki/Simple-and-Effective-Magnetometer-Calibration
+  // ħttp://diydrones.com/profiles/blogs/advanced-hard-and-soft-iron-magnetometer-calibration-for-dummies
   //
   // CalibratedData = ( unCalibratedData – Offset ) / Scaling Factor
   //
