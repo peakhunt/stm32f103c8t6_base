@@ -22,10 +22,10 @@ typedef void (*timer_cb)(SoftTimerElem*);
  */
 struct _soft_timer_elem
 {
-	struct list_head  next;       /** a list head for next timer element in the bucket  */
-	timer_cb          cb;         /** timeout callback                                  */
-	unsigned int      tick;       /** absolute timeout tick count                       */
-	void*             priv;       /** private argument for timeout callback             */
+  struct list_head  next;       /** a list head for next timer element in the bucket  */
+  timer_cb          cb;         /** timeout callback                                  */
+  unsigned int      tick;       /** absolute timeout tick count                       */
+  void*             priv;       /** private argument for timeout callback             */
 };
 
 /**
@@ -33,9 +33,9 @@ struct _soft_timer_elem
  */
 typedef struct _timer
 {
-	int                  tick_rate;                                  /** tick rate 1 means a tick per 1ms      */
-	unsigned int         tick;                                       /** current tick                          */
-	struct list_head     buckets[SOFT_TIMER_NUM_BUCKETS];            /** bucket array                          */
+  int                  tick_rate;                                  /** tick rate 1 means a tick per 1ms      */
+  unsigned int         tick;                                       /** current tick                          */
+  struct list_head     buckets[SOFT_TIMER_NUM_BUCKETS];            /** bucket array                          */
 } SoftTimer;
 
 extern int soft_timer_init(SoftTimer* timer, int tick_rate);
@@ -54,11 +54,11 @@ extern void soft_timer_drive(SoftTimer* timer);
 static inline int
 is_soft_timer_running(SoftTimerElem* elem)
 {
-	if(elem->next.next == &elem->next && elem->next.prev == &elem->next)
-	{
-		return 0;
-	}
-	return 1;
+  if(elem->next.next == &elem->next && elem->next.prev == &elem->next)
+  {
+    return 0;
+  }
+  return 1;
 }
 
 /**
@@ -71,17 +71,17 @@ is_soft_timer_running(SoftTimerElem* elem)
 static inline unsigned int
 get_soft_tick_from_milsec(SoftTimer* timer, int milsec)
 {
-	unsigned int   tick,
-	mod;
+  unsigned int   tick,
+                 mod;
 
-	tick = milsec / timer->tick_rate;
-	mod  = milsec % timer->tick_rate;
+  tick = milsec / timer->tick_rate;
+  mod  = milsec % timer->tick_rate;
 
-	if(mod != 0)
-	{
-		tick += 1;
-	}
-	return tick;
+  if(mod != 0)
+  {
+    tick += 1;
+  }
+  return tick;
 }
 
 #endif //!__SOFT_TIMER_DEF_H__

@@ -18,16 +18,16 @@
 int
 soft_timer_init(SoftTimer* timer, int tick_rate)
 {
-	int i;
+  int i;
 
-	timer->tick_rate           = tick_rate;
-	timer->tick                =      0;
+  timer->tick_rate           = tick_rate;
+  timer->tick                =      0;
 
-	for(i = 0; i < SOFT_TIMER_NUM_BUCKETS; i++)
-	{
-		INIT_LIST_HEAD(&timer->buckets[i]);
-	}
-	return 0;
+  for(i = 0; i < SOFT_TIMER_NUM_BUCKETS; i++)
+  {
+    INIT_LIST_HEAD(&timer->buckets[i]);
+  }
+  return 0;
 }
 
 /**
@@ -48,7 +48,7 @@ soft_timer_deinit(SoftTimer* timer)
 void
 soft_timer_init_elem(SoftTimerElem* elem)
 {
-	INIT_LIST_HEAD(&elem->next);
+  INIT_LIST_HEAD(&elem->next);
 }
 
 /**
@@ -61,20 +61,20 @@ soft_timer_init_elem(SoftTimerElem* elem)
 void
 soft_timer_add(SoftTimer* timer, SoftTimerElem* elem, int expires)
 {
-	int target;
+  int target;
 
-	if(is_soft_timer_running(elem))
-	{
+  if(is_soft_timer_running(elem))
+  {
     // XXX add crash code
     return;
-	}
+  }
 
-	INIT_LIST_HEAD(&elem->next);
+  INIT_LIST_HEAD(&elem->next);
 
-	elem->tick     = timer->tick + get_soft_tick_from_milsec(timer, expires);
-	target         = elem->tick % SOFT_TIMER_NUM_BUCKETS;
+  elem->tick     = timer->tick + get_soft_tick_from_milsec(timer, expires);
+  target         = elem->tick % SOFT_TIMER_NUM_BUCKETS;
 
-	list_add_tail(&elem->next, &timer->buckets[target]);
+  list_add_tail(&elem->next, &timer->buckets[target]);
 }
 
 /**
@@ -86,46 +86,46 @@ soft_timer_add(SoftTimer* timer, SoftTimerElem* elem, int expires)
 void
 soft_timer_del(SoftTimer* timer, SoftTimerElem* elem)
 {
-	if(!is_soft_timer_running(elem))
-	{
-		return;
-	}
-	list_del_init(&elem->next);
+  if(!is_soft_timer_running(elem))
+  {
+    return;
+  }
+  list_del_init(&elem->next);
 }
 
 static void
 timer_tick(SoftTimer* timer)
 {
-	int               current;
-	SoftTimerElem     *p, *n;
-	struct list_head  timeout_list = LIST_HEAD_INIT(timeout_list);
+  int               current;
+  SoftTimerElem     *p, *n;
+  struct list_head  timeout_list = LIST_HEAD_INIT(timeout_list);
 
-	timer->tick++;
+  timer->tick++;
 
-	current = timer->tick % SOFT_TIMER_NUM_BUCKETS;
+  current = timer->tick % SOFT_TIMER_NUM_BUCKETS;
 
-	//
-	// be careful with this code..
-	// Here is the logic behind this
-	// 1. once timer expires, it should be able to re-add the same timer again
-	// 2. when a timer expires, it should be able to remove
-	//    other timers including ones timed out inside the timeout handler
-	//
-	list_for_each_entry_safe(p, n, &timer->buckets[current], next)
-	{
-		if(p->tick == timer->tick)
-		{
-			list_del(&p->next);
-			list_add_tail(&p->next, &timeout_list);
-		}
-	}
+  //
+  // be careful with this code..
+  // Here is the logic behind this
+  // 1. once timer expires, it should be able to re-add the same timer again
+  // 2. when a timer expires, it should be able to remove
+  //    other timers including ones timed out inside the timeout handler
+  //
+  list_for_each_entry_safe(p, n, &timer->buckets[current], next)
+  {
+    if(p->tick == timer->tick)
+    {
+      list_del(&p->next);
+      list_add_tail(&p->next, &timeout_list);
+    }
+  }
 
-	while(!list_empty(&timeout_list))
-	{
-		p = list_first_entry(&timeout_list, SoftTimerElem, next);
-		list_del_init(&p->next);
-		p->cb(p);
-	}
+  while(!list_empty(&timeout_list))
+  {
+    p = list_first_entry(&timeout_list, SoftTimerElem, next);
+    list_del_init(&p->next);
+    p->cb(p);
+  }
 }
 
 /**
@@ -138,5 +138,5 @@ timer_tick(SoftTimer* timer)
 void
 soft_timer_drive(SoftTimer* timer)
 {
-	timer_tick(timer);
+  timer_tick(timer);
 }
