@@ -19,12 +19,33 @@
 16> I2C Debug                 => Done
     Guess too high pull-up register was causing the problem.
     Passed 12 hour test with lesser pull-ups
-12> Accel/Gyro    I2C         => Done
-13> IMU                       => Done
-14> AHRЅ                      => Done
+17> Accel/Gyro    I2C         => Done
+18> IMU                       => Done
+19> AHRЅ                      => Done
+20> HMC5883L                  => Done
 
 ================================================================================
 12> Accel/Gyro    SPI
-13> HMC5883L
 15> GPS 
 16> Gyro/Accel/Mag calibration
+  a) accel calibration
+     to find offset/scale.
+     6 step calibration expecting 1G for each unit axis
+
+  b) gyro calibration
+     to find offset
+     should be zero when stationary
+
+  c) magnetometer calibration
+     c.1) to find bias
+      just find min/max value and divide the sum by 2 to find center
+
+     c.2) to find scale
+      ??? still don't understand
+      https://teslabs.com/articles/magnetometer-calibration/
+
+        c.2.1) scale factor to fit points in sphere
+        c.2.2) cross factor for each axises' perpendicularity to each
+        other
+
+17> AHRS Understanding

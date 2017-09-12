@@ -17,7 +17,7 @@ extern void madgwick_update(Madgwick* madgwick,
                             float gx, float gy, float gz,
                             float ax, float ay, float az,
 								            float mx, float my, float mz);
-extern void madgwick_get_pitch_roll_yaw(Madgwick* madgwick, float data[3]);
+extern void madgwick_get_roll_pitch_yaw(Madgwick* madgwick, float data[3]);
 extern void madgwick_get_quaternion(Madgwick* madgwick, float data[4]);
 
 #endif //!__MADGWICK_DEF_H__

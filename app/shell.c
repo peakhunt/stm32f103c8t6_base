@@ -235,11 +235,13 @@ shell_command_pwm_out(ShellIntf* intf, int argc, const char** argv)
     return;
   }
 
+#if 0 // servo test
   if(duty < PWM_MIN_DUTY_CYCLE || duty > PWM_MAX_DUTY_CYCLE)
   {
     shell_printf(intf, "Invalid duty %d\r\n", duty);
     return;
   }
+#endif
 
   pwm_set_duty_cycle(chnl, duty);
 
@@ -304,18 +306,18 @@ shell_command_i2c_stat(ShellIntf* intf, int argc, const char** argv)
 static void
 shell_command_imu(ShellIntf* intf, int argc, const char** argv)
 {
-  float   mahony[3],
-          madgwick[3];
+  float   mahony[4],
+          madgwick[4];
 
-  imu_get_pitch_roll_yaw(imu_get_instance(0), mahony, madgwick);
+  imu_get_orientation(imu_get_instance(0), mahony, madgwick);
 
-  shell_printf(intf, "Mahony Pitch : %.2f\r\n", mahony[0]);
-  shell_printf(intf, "Mahony Roll  : %.2f\r\n", mahony[1]);
-  shell_printf(intf, "Mahony Yaw   : %.2f\r\n", mahony[2]);
+  shell_printf(intf, "Mahony   Pitch: %.2f, Roll: %.2f, Yaw: %.2f, Heading: %.2f\r\n",
+      mahony[1], mahony[0], mahony[2], mahony[3]);
 
-  shell_printf(intf, "Madgwick Pitch : %.2f\r\n", madgwick[0]);
-  shell_printf(intf, "Madgwick Roll  : %.2f\r\n", madgwick[1]);
-  shell_printf(intf, "Madgwick Yaw   : %.2f\r\n", madgwick[2]);
+  shell_printf(intf, "Madgwick Pitch: %.2f, Roll: %.2f, Yaw: %.2f, Heading: %.2f\r\n",
+      madgwick[1], madgwick[0], madgwick[2], madgwick[3]);
+
+  shell_printf(intf, "Heading Raw: %.2f\r\n", imu_get_instance(0)->heading_raw);
 }
 
 static void

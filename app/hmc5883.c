@@ -65,7 +65,22 @@ hmc5883_init(hmc5883Mag* mag, uint8_t address, hmc5883MagGain gain)
 void
 hmc5883_set_mag_gain(hmc5883Mag* mag, hmc5883MagGain gain)
 {
+  //
+  // cra setup
+  // 7    : 0       , no temperature sensor
+  // 6/5  : 00,     , 1 sample per measure
+  // 4/2  : 111     , 220 Hz output rate
+  // 1/0  : 00      , normal
+  hmc5883_write_reg(mag, HMC5883_REGISTER_MAG_CRA_REG_M, 0x1c);
+
+  //
+  // crb setup
+  // gain 
   hmc5883_write_reg(mag, HMC5883_REGISTER_MAG_CRB_REG_M, gain);
+
+  // mode register
+  // continuous measure mode
+  hmc5883_write_reg(mag, HMC5883_REGISTER_MAG_MR_REG_M, 0);
 
   mag->mag_gain = gain;
 

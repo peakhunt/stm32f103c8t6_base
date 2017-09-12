@@ -77,18 +77,22 @@ mpu6050_init(MPU6050_t* mpu6050, MPU6050_Accelerometer_t accel_sensitivity, MPU6
   {
   case MPU6050_Accelerometer_2G:
     mpu6050->Acce_Mult = (float)1 / MPU6050_ACCE_SENS_2;
+    mpu6050->one_g    = MPU6050_ACCE_SENS_2;
     break;
 
   case MPU6050_Accelerometer_4G:
     mpu6050->Acce_Mult = (float)1 / MPU6050_ACCE_SENS_4;
+    mpu6050->one_g    = MPU6050_ACCE_SENS_4;
     break;
 
   case MPU6050_Accelerometer_8G:
     mpu6050->Acce_Mult = (float)1 / MPU6050_ACCE_SENS_8;
+    mpu6050->one_g    = MPU6050_ACCE_SENS_8;
     break;
 
   case MPU6050_Accelerometer_16G:
     mpu6050->Acce_Mult = (float)1 / MPU6050_ACCE_SENS_16;
+    mpu6050->one_g    = MPU6050_ACCE_SENS_16;
     break;
 
   default:

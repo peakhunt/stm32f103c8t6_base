@@ -25,7 +25,7 @@ typedef struct qmc5883Mag_s
   int16_t ry;     // raw y
   int16_t rz;     // raw y
 
-  float multi_factor;     // number to convert raw value to gauss
+  float to_mgauss;      // number to convert raw value to gauss
 
   uint8_t             address;
 } qmc5883Mag;

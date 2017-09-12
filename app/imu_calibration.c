@@ -7,6 +7,7 @@
 #include "imu.h"
 #include "mainloop_timer.h"
 #include "imu_calibration.h"
+#include "sensor_calib.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -14,7 +15,11 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 #define IMU_CALIB_SAMPLE_INTERVAL           4       // sample every 4ms
-#define IMU_CALIB_TOTAL_PERIOD              5000    // perform calibration for 5 sec
+#define IMU_CALIB_MAG_SAMPLE_INTERVAL       5       // sample every 4ms
+#define IMU_CALIB_TOTAL_PERIOD              30000   // perform calibration for 5 sec
+
+#define MAX(a,b)      (a > b ? a : b)
+#define MIN(a,b)      (a < b ? a : b)
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -68,7 +73,7 @@ imu_calib_accel_read(SoftTimerElem* te)
   // accel
   _ax_sum += _imu->mpu6050.Accelerometer_X;
   _ay_sum += _imu->mpu6050.Accelerometer_Y;
-  _az_sum += _imu->mpu6050.Accelerometer_Z;
+  _az_sum += (1.0f/_imu->mpu6050.Acce_Mult - _imu->mpu6050.Accelerometer_Z);
 
   _sample_count++;
 
@@ -113,18 +118,18 @@ imu_calib_mag_read(SoftTimerElem* te)
 #endif
 
   // mag max
-  _mx_max = _imu->mag.rx > _mx_max ? _imu->mag.rx : _mx_max;
-  _my_max = _imu->mag.ry > _my_max ? _imu->mag.ry : _my_max;
-  _mz_max = _imu->mag.rz > _mz_max ? _imu->mag.rz : _mz_max;
+  _mx_max = MAX(_imu->mag.rx, _mx_max);
+  _my_max = MAX(_imu->mag.ry, _my_max);
+  _mz_max = MAX(_imu->mag.rz, _mz_max);
 
   // mag min
-  _mx_min = _imu->mag.rx < _mx_min ? _imu->mag.rx : _mx_min;
-  _my_min = _imu->mag.ry < _my_min ? _imu->mag.ry : _my_min;
-  _mz_min = _imu->mag.rz < _mz_min ? _imu->mag.rz : _mz_min;
+  _mx_min = MIN(_imu->mag.rx, _mx_min);
+  _my_min = MIN(_imu->mag.ry, _my_min);
+  _mz_min = MIN(_imu->mag.rz, _mz_min);
   
   _sample_count++;
 
-  mainloop_timer_schedule(&_sampling_timer, IMU_CALIB_SAMPLE_INTERVAL);
+  mainloop_timer_schedule(&_sampling_timer, IMU_CALIB_MAG_SAMPLE_INTERVAL);
 }
 
 static void

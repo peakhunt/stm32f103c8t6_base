@@ -1,10 +1,9 @@
 #ifndef __HMC5883_DEF_H__
 #define __HMC5883_DEF_H__
 
-//#define HMC5883_ADDRESS_MAG            (0x1e)
+#define HMC5883_ADDRESS_MAG            (0x1e)
 //#define HMC5883_ADDRESS_MAG            (0x1c)
 //#define HMC5883_ADDRESS_MAG            (30)
-#define HMC5883_ADDRESS_MAG            (0x0d)
 
 typedef enum
 {

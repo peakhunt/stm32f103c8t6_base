@@ -86,6 +86,7 @@ typedef struct
   uint8_t     Address;          /*!< I2C address of device. Only for private use */
   float       Gyro_Mult;        /*!< Gyroscope corrector from raw data to "degrees/s". Only for private use */
   float       Acce_Mult;        /*!< Accelerometer corrector from raw data to "g". Only for private use */
+  int16_t     one_g;            /* raw ADC value equivalent to 1G */
 
   /* Public */
   int16_t     Accelerometer_X;  /*!< Accelerometer value X axis */

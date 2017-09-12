@@ -21,7 +21,7 @@ TARGET = stm32f103c8t6_base
 # building variables
 ######################################
 # debug build?
-DEBUG = 1
+DEBUG = 0
 # optimization
 #OPT = -O0
 OPT = -Os
@@ -118,6 +118,7 @@ $(APP_DIR)/imu_calibration.c				\
 $(APP_DIR)/barometer.c							\
 $(APP_DIR)/mahony.c									\
 $(APP_DIR)/madgwick.c								\
+$(APP_DIR)/sensor_calib.c						\
 $(APP_DIR)/app.c
 
 
@@ -177,8 +178,7 @@ AS_DEFS =
 C_DEFS =  									\
 -DUSE_HAL_DRIVER 						\
 -DSTM32F103xB								\
--DBMP180_API								\
--DUSE_QMC5883_MAG
+-DBMP180_API								
 
 
 # AS includes
