@@ -37,9 +37,9 @@ static ShellIntf              _shell_usart_if;
 static void
 reissue_rx_intr_req(void)
 {
-	_huart->pRxBuffPtr		= _usart_irq_buffer;
-	_huart->RxXferSize		= USART_IRQ_READ_LENGTH;
-	_huart->RxXferCount		= USART_IRQ_READ_LENGTH;
+  _huart->pRxBuffPtr    = _usart_irq_buffer;
+  _huart->RxXferSize    = USART_IRQ_READ_LENGTH;
+  _huart->RxXferCount   = USART_IRQ_READ_LENGTH;
   _huart->ErrorCode     = HAL_UART_ERROR_NONE;
   _huart->RxState       = HAL_UART_STATE_BUSY_RX;
 
