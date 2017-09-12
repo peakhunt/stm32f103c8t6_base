@@ -175,9 +175,9 @@ MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI)
 AS_DEFS = 
 
 # C defines
-C_DEFS =  									\
--DUSE_HAL_DRIVER 						\
--DSTM32F103xB								\
+C_DEFS =                    \
+-DUSE_HAL_DRIVER            \
+-DSTM32F103xB               \
 -DBMP180_API								
 
 
