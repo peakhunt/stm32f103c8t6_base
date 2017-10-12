@@ -12,6 +12,7 @@
 #include "shell_if_usb.h"
 #include "micros.h"
 #include "pwm_out.h"
+#include "pwm_in.h"
 #include "imu.h"
 #include "imu_calibration.h"
 #include "barometer.h"
@@ -51,13 +52,17 @@ static void shell_command_uptime(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_micros(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_micros_test(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_pwm_out(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_pwm_in(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_i2c_stat(ShellIntf* intf, int argc, const char** argv);
+
+#ifdef __ENABLE_IMU
 static void shell_command_mag_data(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_bmp180(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_mpu6050(ShellIntf* intf, int argc, const char** argv);
-static void shell_command_i2c_stat(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_imu(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_accel_calib(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_mag_calib(ShellIntf* intf, int argc, const char** argv);
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -104,6 +109,12 @@ static ShellCommand     _commands[] =
     shell_command_pwm_out,
   },
   {
+    "pwm_in",
+    "get pwm input duty cycle",
+    shell_command_pwm_in,
+  },
+#ifdef __ENABLE_IMU
+  {
     "mag_data",
     "read mag compass data",
     shell_command_mag_data,
@@ -119,11 +130,6 @@ static ShellCommand     _commands[] =
     shell_command_mpu6050,
   },
   {
-    "i2cstat",
-    "display i2c stat",
-    shell_command_i2c_stat,
-  },
-  {
     "imu",
     "display imu info",
     shell_command_imu,
@@ -137,6 +143,12 @@ static ShellCommand     _commands[] =
     "mag_cal",
     "perform magnetometer calibration",
     shell_command_mag_calib,
+  },
+#endif
+  {
+    "i2cstat",
+    "display i2c stat",
+    shell_command_i2c_stat,
   },
 };
 
@@ -249,6 +261,54 @@ shell_command_pwm_out(ShellIntf* intf, int argc, const char** argv)
 }
 
 static void
+shell_command_pwm_in(ShellIntf* intf, int argc, const char** argv)
+{
+  uint8_t     chnl;
+  uint16_t    duty;
+
+  //
+  // pwm_in chnl
+  //
+  if( argc != 2)
+  {
+    shell_printf(intf, "Syntax error %s chnl\r\n", argv[0]);
+    return;
+  }
+
+  chnl = atoi(argv[1]);
+
+  if(chnl >= PWMInChannelNumber_MAX)
+  {
+    shell_printf(intf, "Invalid channel %d\r\n", chnl);
+    return;
+  }
+
+  duty = pwm_in_get(chnl);
+
+  shell_printf(intf, "duty cycle for channel %d is %d\r\n", chnl, duty);
+}
+
+
+static void
+shell_command_i2c_stat(ShellIntf* intf, int argc, const char** argv)
+{
+  I2CBusStat* stat;
+
+  stat = i2c_bus_get_stat(I2CBus_0);
+  shell_printf(intf, "Bus1  num read       : %lu\r\n", stat->num_read);
+  shell_printf(intf, "Bus1  num read fail  : %lu\r\n", stat->num_read_fail);
+  shell_printf(intf, "Bus1  num write      : %lu\r\n", stat->num_write);
+  shell_printf(intf, "Bus1  num write fail : %lu\r\n", stat->num_write_fail);
+
+  stat = i2c_bus_get_stat(I2CBus_1);
+  shell_printf(intf, "Bus2  num read       : %lu\r\n", stat->num_read);
+  shell_printf(intf, "Bus2  num read fail  : %lu\r\n", stat->num_read_fail);
+  shell_printf(intf, "Bus2  num write      : %lu\r\n", stat->num_write);
+  shell_printf(intf, "Bus2  num write fail : %lu\r\n", stat->num_write_fail);
+}
+
+#ifdef __ENABLE_IMU
+static void
 shell_command_mag_data(ShellIntf* intf, int argc, const char** argv)
 {
   float data[4];
@@ -283,24 +343,6 @@ shell_command_mpu6050(ShellIntf* intf, int argc, const char** argv)
   imu_get_gyro(imu_get_instance(0), data, fdata);
   shell_printf(intf, "Gyro  X: %.2f, Y: %.2f, Z: %.2f\r\n",
       fdata[0], fdata[1], fdata[2]);
-}
-
-static void
-shell_command_i2c_stat(ShellIntf* intf, int argc, const char** argv)
-{
-  I2CBusStat* stat;
-
-  stat = i2c_bus_get_stat(I2CBus_0);
-  shell_printf(intf, "Bus1  num read       : %lu\r\n", stat->num_read);
-  shell_printf(intf, "Bus1  num read fail  : %lu\r\n", stat->num_read_fail);
-  shell_printf(intf, "Bus1  num write      : %lu\r\n", stat->num_write);
-  shell_printf(intf, "Bus1  num write fail : %lu\r\n", stat->num_write_fail);
-
-  stat = i2c_bus_get_stat(I2CBus_1);
-  shell_printf(intf, "Bus2  num read       : %lu\r\n", stat->num_read);
-  shell_printf(intf, "Bus2  num read fail  : %lu\r\n", stat->num_read_fail);
-  shell_printf(intf, "Bus2  num write      : %lu\r\n", stat->num_write);
-  shell_printf(intf, "Bus2  num write fail : %lu\r\n", stat->num_write_fail);
 }
 
 static void
@@ -378,6 +420,7 @@ shell_command_mag_calib(ShellIntf* intf, int argc, const char** argv)
   imu_calibration_init();
   imu_calibration_mag_perform(mag_calib_done, intf);
 }
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 //

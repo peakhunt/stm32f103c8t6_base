@@ -118,13 +118,21 @@ int main(void)
   MX_TIM3_Init();
   MX_SPI1_Init();
   MX_TIM2_Init();
+  MX_TIM4_Init();
   MX_USB_DEVICE_Init();
 
+  /* USER CODE BEGIN 2 */
   app_init_r();
+  /* USER CODE END 2 */
 
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
   app_mainloop();
+  /* USER CODE END WHILE */
 
-  return 0;
+  /* USER CODE BEGIN 3 */
+  /* USER CODE END 3 */
+
 }
 
 /** System Clock Configuration

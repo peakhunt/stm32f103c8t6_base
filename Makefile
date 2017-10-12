@@ -21,10 +21,9 @@ TARGET = stm32f103c8t6_base
 # building variables
 ######################################
 # debug build?
-DEBUG = 0
+DEBUG = 1
 # optimization
-#OPT = -O0
-OPT = -Os
+OPT = -O0
 
 
 #######################################
@@ -104,6 +103,7 @@ $(APP_DIR)/shell_if_usart.c					\
 $(APP_DIR)/shell_if_usb.c						\
 $(APP_DIR)/micros.c									\
 $(APP_DIR)/pwm_out.c								\
+$(APP_DIR)/pwm_in.c								  \
 $(APP_DIR)/i2c_bus.c								\
 $(APP_DIR)/spi_bus.c								\
 $(APP_DIR)/ws2812b.c								\
