@@ -9,6 +9,12 @@
 #include "imu_calibration.h"
 #include "sensor_calib.h"
 
+/*
+   XXX
+   bullshit implementation
+   mainly kept for historical reason
+*/
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 // private definitions

@@ -23,7 +23,8 @@ TARGET = stm32f103c8t6_base
 # debug build?
 DEBUG = 1
 # optimization
-OPT = -O0
+#OPT = -Os
+OPT = -O2
 
 
 #######################################
@@ -114,11 +115,13 @@ $(APP_DIR)/bmp180_support.c					\
 $(APP_DIR)/mpu6050.c								\
 $(APP_DIR)/mpu6500_spi.c						\
 $(APP_DIR)/imu.c										\
-$(APP_DIR)/imu_calibration.c				\
 $(APP_DIR)/barometer.c							\
 $(APP_DIR)/mahony.c									\
 $(APP_DIR)/madgwick.c								\
 $(APP_DIR)/sensor_calib.c						\
+$(APP_DIR)/gyro_calibration.c				\
+$(APP_DIR)/accel_calibration.c			\
+$(APP_DIR)/mag_calibration.c			  \
 $(APP_DIR)/app.c
 
 
@@ -178,6 +181,7 @@ AS_DEFS =
 C_DEFS =                    \
 -DUSE_HAL_DRIVER            \
 -DSTM32F103xB               \
+-D__ENABLE_IMU              \
 -DBMP180_API								
 
 

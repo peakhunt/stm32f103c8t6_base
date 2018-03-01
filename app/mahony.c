@@ -8,8 +8,7 @@
 // private definitions
 //
 ////////////////////////////////////////////////////////////////////////////////
-//#define twoKpDef  (2.0f * 0.5f)     // 2 * proportional gain
-#define twoKpDef  (2.0f * 40.0f)     // 2 * proportional gain
+#define twoKpDef  (2.0f * 0.5f)     // 2 * proportional gain
 #define twoKiDef  (2.0f * 0.0f)     // 2 * integral gain
 
 ////////////////////////////////////////////////////////////////////////////////

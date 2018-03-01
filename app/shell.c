@@ -14,10 +14,12 @@
 #include "pwm_out.h"
 #include "pwm_in.h"
 #include "imu.h"
-#include "imu_calibration.h"
 #include "barometer.h"
 #include "mpu6050.h"
 #include "i2c_bus.h"
+#include "gyro_calibration.h"
+#include "accel_calibration.h"
+#include "mag_calibration.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -44,23 +46,25 @@ typedef struct
 // private prototypes
 //
 ////////////////////////////////////////////////////////////////////////////////
-static void shell_printf(ShellIntf* intf, const char* fmt, ...) __attribute__((format(gnu_printf, 2, 3)));
-
 static void shell_command_help(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_version(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_uptime(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_micros(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_micros_test(ShellIntf* intf, int argc, const char** argv);
+#if 0
 static void shell_command_pwm_out(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_pwm_in(ShellIntf* intf, int argc, const char** argv);
+#endif
 static void shell_command_i2c_stat(ShellIntf* intf, int argc, const char** argv);
 
 #ifdef __ENABLE_IMU
-static void shell_command_mag_data(ShellIntf* intf, int argc, const char** argv);
-static void shell_command_bmp180(ShellIntf* intf, int argc, const char** argv);
-static void shell_command_mpu6050(ShellIntf* intf, int argc, const char** argv);
+//static void shell_command_bmp180(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_imu_sensor(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_imu(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_gyro_calib(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_accel_calib_init(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_accel_calib(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_accel_calib_finish(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_mag_calib(ShellIntf* intf, int argc, const char** argv);
 #endif
 
@@ -103,6 +107,7 @@ static ShellCommand     _commands[] =
     "perform micro accuracy test",
     shell_command_micros_test,
   },
+#if 0
   {
     "pwm_out",
     "control pwm duty cycle",
@@ -113,21 +118,19 @@ static ShellCommand     _commands[] =
     "get pwm input duty cycle",
     shell_command_pwm_in,
   },
+#endif
 #ifdef __ENABLE_IMU
-  {
-    "mag_data",
-    "read mag compass data",
-    shell_command_mag_data,
-  },
+#if 0
   {
     "bmp180",
     "display bmp180 data",
     shell_command_bmp180,
   },
+#endif
   {
-    "mpu6050",
-    "display mpu6050 data",
-    shell_command_mpu6050,
+    "imu_sensor",
+    "display imu sensor data",
+    shell_command_imu_sensor,
   },
   {
     "imu",
@@ -135,9 +138,24 @@ static ShellCommand     _commands[] =
     shell_command_imu,
   },
   {
+    "gyro_cal",
+    "perform gyro calibration",
+    shell_command_gyro_calib,
+  },
+  {
+    "accel_cal_init",
+    "perform accelerometer calibration init",
+    shell_command_accel_calib_init,
+  },
+  {
     "accel_cal",
     "perform accelerometer calibration",
     shell_command_accel_calib,
+  },
+  {
+    "accel_cal_finish",
+    "finish accelerometer calibration",
+    shell_command_accel_calib_finish,
   },
   {
     "mag_cal",
@@ -223,6 +241,7 @@ shell_command_micros_test(ShellIntf* intf, int argc, const char** argv)
   shell_printf(intf, "D : %u\r\n", d);
 }
 
+#if 0
 static void
 shell_command_pwm_out(ShellIntf* intf, int argc, const char** argv)
 {
@@ -287,6 +306,7 @@ shell_command_pwm_in(ShellIntf* intf, int argc, const char** argv)
 
   shell_printf(intf, "duty cycle for channel %d is %d\r\n", chnl, duty);
 }
+#endif
 
 
 static void
@@ -308,19 +328,7 @@ shell_command_i2c_stat(ShellIntf* intf, int argc, const char** argv)
 }
 
 #ifdef __ENABLE_IMU
-static void
-shell_command_mag_data(ShellIntf* intf, int argc, const char** argv)
-{
-  float data[4];
-
-  imu_get_mag(imu_get_instance(0), data);
-
-  shell_printf(intf, "X: %.2f\r\n", data[0]);
-  shell_printf(intf, "Y: %.2f\r\n", data[1]);
-  shell_printf(intf, "Z: %.2f\r\n", data[2]);
-  shell_printf(intf, "O: %.2f\r\n", data[3]);
-}
-
+#if 0
 static void
 shell_command_bmp180(ShellIntf* intf, int argc, const char** argv)
 {
@@ -329,32 +337,29 @@ shell_command_bmp180(ShellIntf* intf, int argc, const char** argv)
   shell_printf(intf, "Temperature: %.2f C\r\n", barometer_get_temperature()/10.0f);
   shell_printf(intf, "Pressure   : %.2f mBar\r\n", barometer_get_pressure()/100.0f);
 }
+#endif
 
 static void
-shell_command_mpu6050(ShellIntf* intf, int argc, const char** argv)
+shell_command_imu_sensor(ShellIntf* intf, int argc, const char** argv)
 {
-  int16_t   data[3];
-  float     fdata[3];
+  int32_t   data[3];
 
-  imu_get_accel(imu_get_instance(0), data, fdata);
-  shell_printf(intf, "Accel X: %.2f, Y: %.2f, Z: %.2fd\r\n",
-      fdata[0], fdata[1], fdata[2]);
+  imu_get_accel(imu_get_instance(0), data);
+  shell_printf(intf, "Accel X: %ld, Y: %ld, Z: %ld\r\n", data[0], data[1], data[2]);
 
-  imu_get_gyro(imu_get_instance(0), data, fdata);
-  shell_printf(intf, "Gyro  X: %.2f, Y: %.2f, Z: %.2f\r\n",
-      fdata[0], fdata[1], fdata[2]);
+  imu_get_gyro(imu_get_instance(0), data);
+  shell_printf(intf, "Gyro X: %ld, Y: %ld, Z: %ld\r\n", data[0], data[1], data[2]);
+
+  imu_get_mag(imu_get_instance(0), data);
+  shell_printf(intf, "Mag  X: %ld, Y: %ld, Z: %ld\r\n", data[0], data[1], data[2]);
 }
 
 static void
 shell_command_imu(ShellIntf* intf, int argc, const char** argv)
 {
-  float   mahony[4],
-          madgwick[4];
+  float   madgwick[4];
 
-  imu_get_orientation(imu_get_instance(0), mahony, madgwick);
-
-  shell_printf(intf, "Mahony   Pitch: %.2f, Roll: %.2f, Yaw: %.2f, Heading: %.2f\r\n",
-      mahony[1], mahony[0], mahony[2], mahony[3]);
+  imu_get_orientation(imu_get_instance(0), madgwick);
 
   shell_printf(intf, "Madgwick Pitch: %.2f, Roll: %.2f, Yaw: %.2f, Heading: %.2f\r\n",
       madgwick[1], madgwick[0], madgwick[2], madgwick[3]);
@@ -362,6 +367,7 @@ shell_command_imu(ShellIntf* intf, int argc, const char** argv)
   shell_printf(intf, "Heading Raw: %.2f\r\n", imu_get_instance(0)->heading_raw);
 }
 
+#if 0
 static void
 accel_calib_done(void* arg)
 {
@@ -383,33 +389,130 @@ accel_calib_done(void* arg)
 
   shell_prompt(intf);
 }
+#endif
+
+static void
+shell_command_gyro_calib_done(void* arg)
+{
+  int16_t     offs[3];
+  ShellIntf*  intf = (ShellIntf*)arg;
+
+  gyro_calib_get_offset(offs);
+
+  imu_set_gyro_calib(imu_get_instance(0),  offs[0], offs[1], offs[2]);
+
+  imu_start(imu_get_instance(0)); 
+
+  shell_printf(intf, "Gyro Calibration Complete\r\n");
+  shell_printf(intf, "X Offset: %d\r\n", offs[0]);
+  shell_printf(intf, "Y Offset: %d\r\n", offs[1]);
+  shell_printf(intf, "Z Offset: %d\r\n", offs[2]);
+
+  imu_set_gyro_calib(imu_get_instance(0), offs[0], offs[1], offs[2]);
+
+  shell_prompt(intf);
+}
+
+static void
+shell_command_gyro_calib(ShellIntf* intf, int argc, const char** argv)
+{
+  shell_printf(intf, "Starting Gyro Calibration\r\n");
+
+  gyro_calib_init();
+
+  imu_stop(imu_get_instance(0));
+
+  gyro_calib_perform(&(imu_get_instance(0)->mpu6050), shell_command_gyro_calib_done, intf);
+}
+
+static void
+shell_command_accel_calib_init(ShellIntf* intf, int argc, const char** argv)
+{
+  shell_printf(intf, "Init Gyro Calibration\r\n");
+
+  accel_calib_init();
+
+  imu_stop(imu_get_instance(0));
+}
+
+static void
+shell_command_accel_calib_done(int axis_ndx, void* arg)
+{
+  ShellIntf*  intf = (ShellIntf*)arg;
+
+  shell_printf(intf, "Accel Calibration for %d Axis Complete\r\n", axis_ndx);
+  shell_prompt(intf);
+}
 
 static void
 shell_command_accel_calib(ShellIntf* intf, int argc, const char** argv)
 {
-  shell_printf(intf, "Starting Accelerometer Calibration\r\n");
-  imu_calibration_init();
-  imu_calibration_accel_perform(accel_calib_done, intf);
+  shell_printf(intf, "Starting Accelerometer Calibration for Axis\r\n");
+
+  accel_calib_perform(&(imu_get_instance(0)->mpu6050), shell_command_accel_calib_done, intf);
+}
+
+static void
+shell_command_accel_calib_finish(ShellIntf* intf, int argc, const char** argv)
+{
+  int32_t     offs[3],
+              gain[3];
+
+  accel_calib_calculate();
+
+  imu_start(imu_get_instance(0)); 
+
+  accel_calib_get_offset_gain(offs, gain);
+
+  shell_printf(intf, "X Offset: %ld\r\n", offs[0]);
+  shell_printf(intf, "Y Offset: %ld\r\n", offs[1]);
+  shell_printf(intf, "Z Offset: %ld\r\n", offs[2]);
+
+  shell_printf(intf, "X Gain: %ld\r\n", gain[0]);
+  shell_printf(intf, "Y Gain: %ld\r\n", gain[1]);
+  shell_printf(intf, "Z Gain: %ld\r\n", gain[2]);
+
+  imu_set_accel_calib(imu_get_instance(0),
+                      offs[0], offs[1], offs[2],
+                      gain[0], gain[1], gain[2]);
+#if 0
+  {
+
+    int32_t     sum[6][3],
+                count[6];
+    accel_get_acc_sum(sum, count);
+    for(int i = 0; i < 6; i++)
+    {
+      for(int j = 0; j < 3; j++)
+      {
+        shell_printf(intf, "SUM %d:%d : %ld\r\n", i, j, sum[i][j]);
+      }
+    }
+    for(int i = 0; i < 6; i++)
+    {
+      shell_printf(intf, "count %d : %ld\r\n", i, count[i]);
+    }
+  }
+#endif
 }
 
 static void
 mag_calib_done(void* arg)
 {
   ShellIntf* intf = (ShellIntf*)arg;
-  int16_t     bias[3];
-  float       scale[3];
+  int32_t           bias[3];
 
   shell_printf(intf, "\r\nDone Magnetometer Calibration\r\n");
 
-  imu_get_mag_calib(imu_get_instance(0), bias, scale);
+  mag_calib_get_offset(bias);
 
-  shell_printf(intf, "Mag Bias X : %d\r\n", bias[0]);
-  shell_printf(intf, "Mag Bias Y : %d\r\n", bias[1]);
-  shell_printf(intf, "Mag Bias Z : %d\r\n", bias[2]);
+  imu_set_mag_calib(imu_get_instance(0), (int16_t)bias[0], (int16_t)bias[1], (int16_t)bias[2]);
+  imu_start(imu_get_instance(0)); 
 
-  shell_printf(intf, "Mag Scale X : %.2f\r\n", scale[0]);
-  shell_printf(intf, "Mag Scale Y : %.2f\r\n", scale[1]);
-  shell_printf(intf, "Mag Scale Z : %.2f\r\n", scale[2]);
+  shell_printf(intf, "Mag Bias X : %ld\r\n", bias[0]);
+  shell_printf(intf, "Mag Bias Y : %ld\r\n", bias[1]);
+  shell_printf(intf, "Mag Bias Z : %ld\r\n", bias[2]);
+
   shell_prompt(intf);
 }
 
@@ -417,8 +520,11 @@ static void
 shell_command_mag_calib(ShellIntf* intf, int argc, const char** argv)
 {
   shell_printf(intf, "Starting Magnetometer Calibration\r\n");
-  imu_calibration_init();
-  imu_calibration_mag_perform(mag_calib_done, intf);
+
+  imu_stop(imu_get_instance(0));
+
+  mag_calib_init();
+  mag_calib_perform(&(imu_get_instance(0)->mag), mag_calib_done, intf);
 }
 #endif
 
@@ -465,7 +571,7 @@ shell_execute_command(ShellIntf* intf, char* cmd)
 }
 
 
-static void
+void
 shell_printf(ShellIntf* intf, const char* fmt, ...)
 {
   va_list   args;
@@ -548,4 +654,10 @@ shell_handle_rx(ShellIntf* intf)
       shell_prompt(intf);
     }
   }
+}
+
+struct list_head*
+shell_get_intf_list(void)
+{
+  return &_shell_intf_list;
 }

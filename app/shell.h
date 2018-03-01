@@ -23,5 +23,17 @@ extern void shell_init(void);
 extern void shell_start(void);
 extern void shell_handle_rx(ShellIntf* intf);
 extern void shell_if_register(ShellIntf* intf);
+extern void shell_printf(ShellIntf* intf, const char* fmt, ...) __attribute__((format(gnu_printf, 2, 3)));
+extern struct list_head* shell_get_intf_list(void);
+
+#define shell_out(format, ...)                                          \
+    do {                                                                \
+      ShellIntf* intf;                                                  \
+      struct list_head* list = shell_get_intf_list();                   \
+      list_for_each_entry(intf, list, lh)                               \
+      {                                                                 \
+        shell_printf(intf, format, ##__VA_ARGS__);                      \
+      }                                                                 \
+    } while(0)
 
 #endif //!__SHELL_DEF_H__

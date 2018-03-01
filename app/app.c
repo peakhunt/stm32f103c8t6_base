@@ -27,8 +27,8 @@ void
 app_init_r(void)
 {
   micros_init();
-  pwm_out_init();
-  pwm_in_init();
+  //pwm_out_init();
+  //pwm_in_init();
 
   i2c_bus_init();
   __disable_irq();
@@ -42,7 +42,7 @@ app_init_r(void)
 #ifdef __ENABLE_IMU
   imu_init(imu_get_instance(0));
   imu_start(imu_get_instance(0));
-  barometer_init();
+  //barometer_init();
 #endif
 }
 
