@@ -122,6 +122,7 @@ $(APP_DIR)/sensor_calib.c						\
 $(APP_DIR)/gyro_calibration.c				\
 $(APP_DIR)/accel_calibration.c			\
 $(APP_DIR)/mag_calibration.c			  \
+$(APP_DIR)/config.c			            \
 $(APP_DIR)/app.c
 
 

@@ -14,6 +14,7 @@
 #include "ws2812b.h"
 #include "imu.h"
 #include "barometer.h"
+#include "config.h"
 
 void
 app_init_f(void)
@@ -34,6 +35,8 @@ app_init_r(void)
   __disable_irq();
   shell_init();
   __enable_irq();
+
+  config_init();
 
 #ifdef __ENABLE_WS2812B
   ws2812b_init();

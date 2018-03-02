@@ -1,6 +1,7 @@
 #include <math.h>
 
 #include "imu.h"
+#include "config.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -133,6 +134,8 @@ imu_read(SoftTimerElem* te)
 void
 imu_init(IMU_t* imu)
 {
+  config_t*   cfg = config_get();
+
   // wait 100ms for the sensor to initialize properly
   HAL_Delay(1000);
 
@@ -144,21 +147,21 @@ imu_init(IMU_t* imu)
 #endif
 #endif
 
-  imu->accl_off[0]  =
-  imu->accl_off[1]  =
-  imu->accl_off[2]  = 0;
+  imu->accl_off[0]  = cfg->accl_off[0];
+  imu->accl_off[1]  = cfg->accl_off[1];
+  imu->accl_off[2]  = cfg->accl_off[2];
 
-  imu->accl_scale[0]  =
-  imu->accl_scale[1]  =
-  imu->accl_scale[2] = 4096;
+  imu->accl_scale[0]  = cfg->accl_scale[0];
+  imu->accl_scale[1]  = cfg->accl_scale[1];
+  imu->accl_scale[2]  = cfg->accl_scale[2];
 
-  imu->gyro_off[0]  =
-  imu->gyro_off[1]  =
-  imu->gyro_off[2] = 0;
+  imu->gyro_off[0]  = cfg->gyro_off[0];
+  imu->gyro_off[1]  = cfg->gyro_off[1];
+  imu->gyro_off[2]  = cfg->gyro_off[2];
 
-  imu->mag_bias[0]  =
-  imu->mag_bias[1]  =
-  imu->mag_bias[2] = 0;
+  imu->mag_bias[0]  = cfg->mag_bias[0];
+  imu->mag_bias[1]  = cfg->mag_bias[1];
+  imu->mag_bias[2]  = cfg->mag_bias[2];
 
   imu->heading_madgwick = 0.0f;
   imu->mag_declination  = 7.68f;

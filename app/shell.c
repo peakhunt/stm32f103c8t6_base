@@ -20,6 +20,7 @@
 #include "gyro_calibration.h"
 #include "accel_calibration.h"
 #include "mag_calibration.h"
+#include "config.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -56,6 +57,9 @@ static void shell_command_pwm_out(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_pwm_in(ShellIntf* intf, int argc, const char** argv);
 #endif
 static void shell_command_i2c_stat(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_save(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_show_config(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_show_fconfig(ShellIntf* intf, int argc, const char** argv);
 
 #ifdef __ENABLE_IMU
 //static void shell_command_bmp180(ShellIntf* intf, int argc, const char** argv);
@@ -168,6 +172,21 @@ static ShellCommand     _commands[] =
     "display i2c stat",
     shell_command_i2c_stat,
   },
+  {
+    "save",
+    "save calibration data",
+    shell_command_save,
+  },
+  {
+    "show_config",
+    "show saved configuration",
+    shell_command_show_config,
+  },
+  {
+    "show_fconfig",
+    "show config in flash",
+    shell_command_show_fconfig,
+  }
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -408,6 +427,10 @@ shell_command_gyro_calib_done(void* arg)
   shell_printf(intf, "Y Offset: %d\r\n", offs[1]);
   shell_printf(intf, "Z Offset: %d\r\n", offs[2]);
 
+  config_get()->gyro_off[0] = offs[0];
+  config_get()->gyro_off[1] = offs[1];
+  config_get()->gyro_off[2] = offs[2];
+
   imu_set_gyro_calib(imu_get_instance(0), offs[0], offs[1], offs[2]);
 
   shell_prompt(intf);
@@ -472,6 +495,13 @@ shell_command_accel_calib_finish(ShellIntf* intf, int argc, const char** argv)
   shell_printf(intf, "Y Gain: %ld\r\n", gain[1]);
   shell_printf(intf, "Z Gain: %ld\r\n", gain[2]);
 
+  config_get()->accl_off[0] = offs[0];
+  config_get()->accl_off[1] = offs[1];
+  config_get()->accl_off[2] = offs[2];
+  config_get()->accl_scale[0] = gain[0];
+  config_get()->accl_scale[1] = gain[1];
+  config_get()->accl_scale[2] = gain[2];
+
   imu_set_accel_calib(imu_get_instance(0),
                       offs[0], offs[1], offs[2],
                       gain[0], gain[1], gain[2]);
@@ -513,6 +543,10 @@ mag_calib_done(void* arg)
   shell_printf(intf, "Mag Bias Y : %ld\r\n", bias[1]);
   shell_printf(intf, "Mag Bias Z : %ld\r\n", bias[2]);
 
+  config_get()->mag_bias[0] = bias[0];
+  config_get()->mag_bias[1] = bias[1];
+  config_get()->mag_bias[2] = bias[2];
+
   shell_prompt(intf);
 }
 
@@ -527,6 +561,48 @@ shell_command_mag_calib(ShellIntf* intf, int argc, const char** argv)
   mag_calib_perform(&(imu_get_instance(0)->mag), mag_calib_done, intf);
 }
 #endif
+
+static void
+shell_command_save(ShellIntf* intf, int argc, const char** argv)
+{
+  config_save();
+  shell_printf(intf, "Done saving configuration\r\n");
+}
+
+static void
+print_out_config(ShellIntf* intf, config_t* cfg)
+{
+  shell_printf(intf, "version       %ld\r\n", cfg->version);
+  shell_printf(intf, "magic         %lx\r\n", cfg->magic);
+  shell_printf(intf, "accl_off[0]   %d\r\n", cfg->accl_off[0]);
+  shell_printf(intf, "accl_off[1]   %d\r\n", cfg->accl_off[1]);
+  shell_printf(intf, "accl_off[2]   %d\r\n", cfg->accl_off[2]);
+  shell_printf(intf, "accl_scale[0] %d\r\n", cfg->accl_scale[0]);
+  shell_printf(intf, "accl_scale[1] %d\r\n", cfg->accl_scale[1]);
+  shell_printf(intf, "accl_scale[2] %d\r\n", cfg->accl_scale[2]);
+  shell_printf(intf, "gyro_off[0]   %d\r\n", cfg->gyro_off[0]);
+  shell_printf(intf, "gyro_off[1]   %d\r\n", cfg->gyro_off[1]);
+  shell_printf(intf, "gyro_off[2]   %d\r\n", cfg->gyro_off[2]);
+  shell_printf(intf, "mag_bias[0]   %d\r\n", cfg->mag_bias[0]);
+  shell_printf(intf, "mag_bias[1]   %d\r\n", cfg->mag_bias[1]);
+  shell_printf(intf, "mag_bias[2]   %d\r\n", cfg->mag_bias[2]);
+}
+
+static void
+shell_command_show_config(ShellIntf* intf, int argc, const char** argv)
+{
+  config_t*   cfg = config_get();
+
+  print_out_config(intf, cfg);
+}
+
+static void
+shell_command_show_fconfig(ShellIntf* intf, int argc, const char** argv)
+{
+  config_t*   cfg = config_get_flash();
+
+  print_out_config(intf, cfg);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //
