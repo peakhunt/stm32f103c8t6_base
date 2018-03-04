@@ -7,6 +7,10 @@
 #include "mpu6050.h"
 #include "mainloop_timer.h"
 #include "madgwick.h"
+#include "mahony.h"
+
+#define USE_MADGWICK_AHRS     1
+// #define USE_MAHONY_AHRS    1
 
 typedef struct
 {
@@ -18,7 +22,13 @@ typedef struct
 #endif
   MPU6050_t         mpu6050;       // mpu6050 core
 
+#ifdef USE_MADGWICK_AHRS
   Madgwick          madgwick_ahrs;
+#endif
+
+#if USE_MAHONY_AHRS
+  Mahony            mahony_ahrs;
+#endif
 
   int16_t           accl_off[3];
   int16_t           accl_scale[3];
@@ -29,9 +39,7 @@ typedef struct
   int32_t           accl_value[3];
   int32_t           mag_value[3];
 
-  float             orientation_madgwick[3];
-  float             heading_madgwick;
-  float             heading_raw;
+  float             orientation[3];
   float             mag_declination;
 } IMU_t;
 
@@ -41,10 +49,9 @@ extern void imu_get_accel(IMU_t* imu, int32_t data[3]);
 extern void imu_get_gyro(IMU_t* imu, int32_t data[3]);
 extern void imu_get_mag(IMU_t* imu, int32_t data[3]);
 
-extern void imu_get_orientation(IMU_t* imu, float madgwick[4]);
+extern void imu_get_orientation(IMU_t* imu, float madgwick[3]);
 extern void imu_start(IMU_t* imu);
 extern void imu_stop(IMU_t* imu);
-extern void imu_get_offset(IMU_t* imu, int16_t gyro[3], int16_t accl[3]);
 extern void imu_set_mag_calib(IMU_t* imu, int16_t x_bias, int16_t y_bias, int16_t z_bias);
 extern void imu_get_mag_calib(IMU_t* imu, int16_t bias[3]);
 extern IMU_t* imu_get_instance(int ndx);

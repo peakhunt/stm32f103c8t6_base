@@ -376,39 +376,13 @@ shell_command_imu_sensor(ShellIntf* intf, int argc, const char** argv)
 static void
 shell_command_imu(ShellIntf* intf, int argc, const char** argv)
 {
-  float   madgwick[4];
+  float   orient[3];
 
-  imu_get_orientation(imu_get_instance(0), madgwick);
+  imu_get_orientation(imu_get_instance(0), orient);
 
-  shell_printf(intf, "Madgwick Pitch: %.2f, Roll: %.2f, Yaw: %.2f, Heading: %.2f\r\n",
-      madgwick[1], madgwick[0], madgwick[2], madgwick[3]);
-
-  shell_printf(intf, "Heading Raw: %.2f\r\n", imu_get_instance(0)->heading_raw);
+  shell_printf(intf, "Pitch: %.2f, Roll: %.2f, Yaw: %.2f\r\n",
+      orient[1], orient[0], orient[2]);
 }
-
-#if 0
-static void
-accel_calib_done(void* arg)
-{
-  ShellIntf* intf = (ShellIntf*)arg;
-  int16_t   gyro[3],
-            accl[3];
-
-  shell_printf(intf, "\r\nDone Accelerometer Calibration\r\n");
-
-  imu_get_offset(imu_get_instance(0), gyro, accl);
-
-  shell_printf(intf, "Gyro Offset X : %d\r\n", gyro[0]);
-  shell_printf(intf, "Gyro Offset Y : %d\r\n", gyro[1]);
-  shell_printf(intf, "Gyro Offset Z : %d\r\n", gyro[2]);
-
-  shell_printf(intf, "Accl Offset X : %d\r\n", accl[0]);
-  shell_printf(intf, "Accl Offset Y : %d\r\n", accl[1]);
-  shell_printf(intf, "Accl Offset Z : %d\r\n", accl[2]);
-
-  shell_prompt(intf);
-}
-#endif
 
 static void
 shell_command_gyro_calib_done(void* arg)

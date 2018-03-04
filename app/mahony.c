@@ -8,8 +8,8 @@
 // private definitions
 //
 ////////////////////////////////////////////////////////////////////////////////
-#define twoKpDef  (2.0f * 0.5f)     // 2 * proportional gain
-#define twoKiDef  (2.0f * 0.0f)     // 2 * integral gain
+#define twoKpDef  (2.0f * 1.0f)     // 2 * proportional gain
+#define twoKiDef  (2.0f * 0.3f)     // 2 * integral gain
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -243,19 +243,20 @@ mahony_get_roll_pitch_yaw(Mahony* mahony, float data[3])
 
   float roll, pitch, yaw;
 
-#if 0
   roll  = atan2f(Q0*Q1 + Q2*Q3, 0.5f - Q1*Q1 - Q2*Q2);
   pitch = asinf(-2.0f * (Q1*Q3 - Q0*Q2));
   yaw   = atan2f(Q1*Q2 + Q0*Q3, 0.5f - Q2*Q2 - Q3*Q3);
-#else
-  roll  = atan2f(2.0f * (Q2*Q3 - -Q0*Q1), 1.0f - 2.0f * Q1*Q1 - 2.0f * Q2*Q2);
-  pitch = 0.5f * M_PIf - acos(-(2.0f * (Q1*Q3 + -Q0*Q2)));
-  yaw   =-atan2f(2.0f * (Q1*Q2 - -Q0*Q3), 1.0f - 2.0f * Q2*Q2 - 2.0f * Q3*Q3);
-#endif
+
 
   data[0] = roll * 57.29578f;
   data[1] = pitch * 57.29578f;
-  data[2] = yaw * 57.29578f + 180.0f;
+  data[2] = yaw * 57.29578f;
+
+  if (data[2] < 0.0f)
+  {
+    data[2] += 360.0f;
+  }
+  data[2] = 360.0f - data[2];   // N= 0/360, E=90, S=180, W=270
 }
 
 void

@@ -45,7 +45,7 @@ app_init_r(void)
 #ifdef __ENABLE_IMU
   imu_init(imu_get_instance(0));
   imu_start(imu_get_instance(0));
-  //barometer_init();
+  // barometer_init();
 #endif
 }
 
