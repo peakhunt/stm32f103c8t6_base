@@ -17,7 +17,7 @@ extern void mahony_update(Mahony* mahony,
 							float gx, float gy, float gz,
 							float ax, float ay, float az,
 							float mx, float my, float mz);
-extern void mahony_get_roll_pitch_yaw(Mahony* mahony, float data[3]);
+extern void mahony_get_roll_pitch_yaw(Mahony* mahony, float data[3], float md);
 extern void mahony_get_quaternion(Mahony* mahony, float data[4]);
 
 #endif //!__MAHONY_DEF_H__

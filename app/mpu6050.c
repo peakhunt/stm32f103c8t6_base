@@ -71,7 +71,6 @@ mpu6050_init(MPU6050_t* mpu6050, MPU6050_Accelerometer_t accel_sensitivity, MPU6
   temp = (temp & 0xE7) | (uint8_t)gyro_sensitivity << 3;
   mpu6050_write_reg(mpu6050, MPU6050_GYRO_CONFIG, temp);
 
-
   /* Set sensitivities for multiplying gyro and accelerometer data */
   switch (accel_sensitivity)
   {

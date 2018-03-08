@@ -15,8 +15,7 @@ madgwick_init(Madgwick* madgwick, float sample_freq)
 
   madgwick->invSampleFreq = 1.0f/sample_freq;
 
-  //madgwick->beta  = 0.1f;
-  madgwick->beta  = 0.5f;
+  madgwick->beta  = 1.0f;
 
   madgwick->q0    = 1.0f;
   madgwick->q1    = 0.0f;
@@ -216,7 +215,7 @@ madgwick_updateIMU(Madgwick* madgwick,
 }
 
 void
-madgwick_get_roll_pitch_yaw(Madgwick* madgwick, float data[3])
+madgwick_get_roll_pitch_yaw(Madgwick* madgwick, float data[3], float md)
 {
   float roll, pitch, yaw;
 
@@ -226,13 +225,13 @@ madgwick_get_roll_pitch_yaw(Madgwick* madgwick, float data[3])
 
   data[0] = roll * 57.29578f;
   data[1] = pitch * 57.29578f;
-  data[2] = yaw * 57.29578f;
+  data[2] = yaw * 57.29578f + md;
 
   if (data[2] < 0.0f)
   {
     data[2] += 360.0f;
   }
-  data[2] = 360.0f - data[2];   // N= 0/360, E=90, S=180, W=270
+  //data[2] = 360.0f - data[2];   // N= 0/360, E=90, S=180, W=270
 }
 
 void

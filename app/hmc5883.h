@@ -37,19 +37,11 @@ typedef enum
 
 typedef struct hmc5883Mag_s
 {
-  float rx;       // raw x
-  float ry;       // raw y
-  float rz;       // raw y
+  int16_t rx;       // raw x
+  int16_t ry;       // raw y
+  int16_t rz;       // raw y
 
-  float gx;       // gained x
-  float gy;       // gained y
-  float gz;       // gained z
-
-  hmc5883MagGain      mag_gain;
   uint8_t             address;
-
-  float Gauss_LSB_XY;     // Varies with gain
-  float Gauss_LSB_Z;      // Varies with gain
 } hmc5883Mag;
 
 extern void hmc5883_init(hmc5883Mag* mag, uint8_t address, hmc5883MagGain gain);

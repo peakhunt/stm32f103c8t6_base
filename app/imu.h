@@ -10,7 +10,7 @@
 #include "mahony.h"
 
 #define USE_MADGWICK_AHRS     1
-// #define USE_MAHONY_AHRS    1
+//#define USE_MAHONY_AHRS    1
 
 typedef struct
 {
@@ -59,5 +59,6 @@ extern IMU_t* imu_get_instance(int ndx);
 extern void imu_set_gyro_calib(IMU_t* imu, int16_t gx, int16_t gy, int16_t gz);
 extern void imu_set_accel_calib(IMU_t* imu, int16_t ax, int16_t ay, int16_t az,
     int16_t sx, int16_t sy, int16_t sz);
+extern void imu_reload_mag_declination(IMU_t* imu);
 
 #endif /* !__IMU_DEF_H__ */

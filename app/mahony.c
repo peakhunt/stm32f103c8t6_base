@@ -234,7 +234,7 @@ mahony_updateIMU(Mahony* mahony, float gx, float gy, float gz,
 
 
 void
-mahony_get_roll_pitch_yaw(Mahony* mahony, float data[3])
+mahony_get_roll_pitch_yaw(Mahony* mahony, float data[3], float md)
 {
 #define Q0    mahony->q0
 #define Q1    mahony->q1
@@ -250,13 +250,12 @@ mahony_get_roll_pitch_yaw(Mahony* mahony, float data[3])
 
   data[0] = roll * 57.29578f;
   data[1] = pitch * 57.29578f;
-  data[2] = yaw * 57.29578f;
+  data[2] = yaw * 57.29578f + md;
 
   if (data[2] < 0.0f)
   {
     data[2] += 360.0f;
   }
-  data[2] = 360.0f - data[2];   // N= 0/360, E=90, S=180, W=270
 }
 
 void

@@ -60,16 +60,19 @@ static void shell_command_i2c_stat(ShellIntf* intf, int argc, const char** argv)
 static void shell_command_save(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_show_config(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_show_fconfig(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_show_crc(ShellIntf* intf, int argc, const char** argv);
 
 #ifdef __ENABLE_IMU
 //static void shell_command_bmp180(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_imu_sensor(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_imu_raw(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_imu(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_gyro_calib(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_accel_calib_init(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_accel_calib(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_accel_calib_finish(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_mag_calib(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_mag_decl(ShellIntf* intf, int argc, const char** argv);
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -137,6 +140,11 @@ static ShellCommand     _commands[] =
     shell_command_imu_sensor,
   },
   {
+    "imu_raw",
+    "display imu raw sensor data",
+    shell_command_imu_raw,
+  },
+  {
     "imu",
     "display imu info",
     shell_command_imu,
@@ -166,6 +174,11 @@ static ShellCommand     _commands[] =
     "perform magnetometer calibration",
     shell_command_mag_calib,
   },
+  {
+    "mag_decl",
+    "set magnetic declination",
+    shell_command_mag_decl,
+  },
 #endif
   {
     "i2cstat",
@@ -186,6 +199,11 @@ static ShellCommand     _commands[] =
     "show_fconfig",
     "show config in flash",
     shell_command_show_fconfig,
+  },
+  {
+    "show_crc",
+    "show config crc",
+    shell_command_show_crc,
   }
 };
 
@@ -374,6 +392,27 @@ shell_command_imu_sensor(ShellIntf* intf, int argc, const char** argv)
 }
 
 static void
+shell_command_imu_raw(ShellIntf* intf, int argc, const char** argv)
+{
+  IMU_t* imu = imu_get_instance(0);
+
+  shell_printf(intf, "Accel X: %d, Y: %d, Z: %d\r\n",
+      imu->mpu6050.Accelerometer_X,
+      imu->mpu6050.Accelerometer_Y,
+      imu->mpu6050.Accelerometer_Z);
+
+  shell_printf(intf, "Gyro X: %d, Y: %d, Z: %d\r\n", 
+    imu->mpu6050.Gyroscope_X,
+    imu->mpu6050.Gyroscope_Y,
+    imu->mpu6050.Gyroscope_Z);
+
+  shell_printf(intf, "Mag  X: %d, Y: %d, Z: %d\r\n", 
+      (int)imu->mag.rx,
+      (int)imu->mag.ry,
+      (int)imu->mag.rz);
+}
+
+static void
 shell_command_imu(ShellIntf* intf, int argc, const char** argv)
 {
   float   orient[3];
@@ -534,6 +573,24 @@ shell_command_mag_calib(ShellIntf* intf, int argc, const char** argv)
   mag_calib_init();
   mag_calib_perform(&(imu_get_instance(0)->mag), mag_calib_done, intf);
 }
+
+static void
+shell_command_mag_decl(ShellIntf* intf, int argc, const char** argv)
+{
+  int32_t   v;
+
+  if(argc != 2) 
+  {
+    shell_printf(intf, "invalid command: %s <mag decl value>\r\n", argv[0]);
+    return;
+  }
+
+  v = (int32_t)(atof(argv[1]) * 100);
+
+  config_get()->mag_declination = v;
+  imu_reload_mag_declination(imu_get_instance(0));
+}
+
 #endif
 
 static void
@@ -560,6 +617,7 @@ print_out_config(ShellIntf* intf, config_t* cfg)
   shell_printf(intf, "mag_bias[0]   %d\r\n", cfg->mag_bias[0]);
   shell_printf(intf, "mag_bias[1]   %d\r\n", cfg->mag_bias[1]);
   shell_printf(intf, "mag_bias[2]   %d\r\n", cfg->mag_bias[2]);
+  shell_printf(intf, "mag_decl      %.2f\r\n", cfg->mag_declination / 100.0f);
 }
 
 static void
@@ -576,6 +634,17 @@ shell_command_show_fconfig(ShellIntf* intf, int argc, const char** argv)
   config_t*   cfg = config_get_flash();
 
   print_out_config(intf, cfg);
+}
+
+static void
+shell_command_show_crc(ShellIntf* intf, int argc, const char** argv)
+{
+  uint16_t      mem, flash;
+
+  config_get_crc(&mem, &flash);
+
+  shell_printf(intf, "mem     %d\r\n", mem);
+  shell_printf(intf, "flash   %d\r\n", flash);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

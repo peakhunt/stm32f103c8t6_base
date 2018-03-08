@@ -17,6 +17,16 @@
 // private definitions
 //
 ////////////////////////////////////////////////////////////////////////////////
+typedef enum {
+  CW0_DEG,
+  CW90_DEG,
+  CW180_DEG,
+  CW270_DEG,
+  CW0_DEG_FLIP,
+  CW90_DEG_FLIP,
+  CW180_DEG_FLIP,
+  CW270_DEG_FLIP,
+} SensorAlign_t;
 
 #define IMU_SAMPLE_INTERVAL                 2         // mms. 500 Hz
 #define IMU_SAMPLE_FREQUENCY                (1000.0f/IMU_SAMPLE_INTERVAL)
@@ -56,44 +66,42 @@ ahrs_update(IMU_t* imu)
   int32_t     tmp;
 
   //
+  // madgwick filter
+  // x --> North
+  // y --> East
+  // z --> Down
+  //
   // in my test setup
   //
   // for gyro/accel,
   // x = y
-  // y = -x
+  // y = x
   // z = z
   //
   // for  magnetometer
   // x = -x
-  // y = -y
+  // y = y
   // z = z
 
-  // gyro zero calibration
+  // gyro zero adjustment
   gx =  (imu->mpu6050.Gyroscope_X - imu->gyro_off[0]);
   gy =  (imu->mpu6050.Gyroscope_Y - imu->gyro_off[1]);
   gz =  (imu->mpu6050.Gyroscope_Z - imu->gyro_off[2]);
-  // xxx sensor align
-  tmp = gx;
-  gx  = gy;
-  gy  = -tmp;
 
-  // accel zero/scale calibration
+  // accel zero/scale adjustment
   ax =  (imu->mpu6050.Accelerometer_X - imu->accl_off[0]) * imu->accl_scale[0] / 4096;
   ay =  (imu->mpu6050.Accelerometer_Y - imu->accl_off[1]) * imu->accl_scale[1] / 4096;
   az =  (imu->mpu6050.Accelerometer_Z - imu->accl_off[2]) * imu->accl_scale[2] / 4096;
-  // xxx sensor align
   tmp = ax;
-  ax  = ay;
+  ax  = -ay;
   ay  = -tmp;
 
-  // compass calibration
+  // compass offset adjustment
   mx = imu->mag.rx - imu->mag_bias[0];
   my = imu->mag.ry - imu->mag_bias[1];
   mz = imu->mag.rz - imu->mag_bias[2];
-  // XXX sensor align
   mx = -mx;
-  my = -my;
-  
+  mz = -mz;
 
   imu->gyro_value[0] = gx;
   imu->gyro_value[1] = gy;
@@ -123,7 +131,7 @@ ahrs_update(IMU_t* imu)
       mx, my, mz        // mag
   );
 
-  madgwick_get_roll_pitch_yaw(&imu->madgwick_ahrs,  imu->orientation);
+  madgwick_get_roll_pitch_yaw(&imu->madgwick_ahrs,  imu->orientation, imu->mag_declination);
 #endif
 
 #ifdef USE_MAHONY_AHRS
@@ -135,10 +143,7 @@ ahrs_update(IMU_t* imu)
       mx, my, mz        // mag
   );
 
-  mahony_get_roll_pitch_yaw(&imu->mahony_ahrs,  imu->orientation);
-#endif
-
-#ifdef USE_MAHONY_AHRS
+  mahony_get_roll_pitch_yaw(&imu->mahony_ahrs,  imu->orientation, imu->mag_declination);
 #endif
 }
 
@@ -204,7 +209,7 @@ imu_init(IMU_t* imu)
   imu->mag_bias[1]  = cfg->mag_bias[1];
   imu->mag_bias[2]  = cfg->mag_bias[2];
 
-  imu->mag_declination  = 7.68f;
+  imu_reload_mag_declination(imu);
 
   mpu6050_init(&imu->mpu6050, MPU6050_Accelerometer_8G, MPU6050_Gyroscope_500s);
   mpu6050_set_gyro_dlpf(&imu->mpu6050, 0);   // H/W gyro LPF in 256 Hz
@@ -308,4 +313,13 @@ imu_set_accel_calib(IMU_t* imu, int16_t ax, int16_t ay, int16_t az,
   imu->accl_scale[0] = sx;
   imu->accl_scale[1] = sy;
   imu->accl_scale[2] = sz;
+}
+
+void
+imu_reload_mag_declination(IMU_t* imu)
+{
+  const int deg = config_get()->mag_declination / 100;
+  const int min = config_get()->mag_declination   % 100;
+
+  imu->mag_declination  = (deg + ((float)min * (1.0f / 60.0f)));
 }

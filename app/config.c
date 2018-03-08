@@ -19,23 +19,26 @@ typedef struct {
 static config_internal_t     _config = 
 {
   .cfg = {
-    .version        = CONFIG_VERSION,
-    .magic          = CONFIG_MAGIC,
-    .accl_off[0]    = 0,
-    .accl_off[1]    = 0,
-    .accl_off[2]    = 0,
-    .accl_scale[0]  = 4096,
-    .accl_scale[1]  = 4096,
-    .accl_scale[2]  = 4096,
-    .gyro_off[0]    = 0,
-    .gyro_off[1]    = 0,
-    .gyro_off[2]    = 0,
-    .mag_bias[0]    = 0,
-    .mag_bias[1]    = 0,
-    .mag_bias[2]    = 0,
+    .version          = CONFIG_VERSION,
+    .magic            = CONFIG_MAGIC,
+    .accl_off[0]      = 0,
+    .accl_off[1]      = 0,
+    .accl_off[2]      = 0,
+    .accl_scale[0]    = 4096,
+    .accl_scale[1]    = 4096,
+    .accl_scale[2]    = 4096,
+    .gyro_off[0]      = 0,
+    .gyro_off[1]      = 0,
+    .gyro_off[2]      = 0,
+    .mag_bias[0]      = 0,
+    .mag_bias[1]      = 0,
+    .mag_bias[2]      = 0,
+    .mag_declination  = 0,
   },
   .crc            = 0,
 };
+
+uint16_t    _debug_crc;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -78,16 +81,15 @@ static bool
 is_flash_config_valid(void)
 {
   config_internal_t* flash_cfg = (config_internal_t*)CONFIG_START_ADDR;
-  int16_t   flash_crc;
 
   if(flash_cfg->cfg.magic != CONFIG_MAGIC)
   {
     return false;
   }
 
-  flash_crc = calcCRC(0, (const void*)flash_cfg, sizeof(config_t));
+  _debug_crc = calcCRC(0, (const void*)flash_cfg, sizeof(config_t));
 
-  if(flash_cfg->crc != flash_crc)
+  if(flash_cfg->crc != _debug_crc)
     return false;
 
   return true;
@@ -167,4 +169,14 @@ config_save(void)
   __disable_irq();
   erase_program_config_to_flash();
   __enable_irq();
+}
+
+void
+config_get_crc(uint16_t* mem, uint16_t* flash)
+{
+  config_internal_t* flash_cfg = (config_internal_t*)CONFIG_START_ADDR;
+
+  *flash = flash_cfg->crc;
+  *mem = _debug_crc;
+  //*mem   = calcCRC(0, (const void*)&_config.cfg, sizeof(config_t));
 }
