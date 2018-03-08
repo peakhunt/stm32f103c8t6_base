@@ -104,6 +104,10 @@ ahrs_update(IMU_t* imu)
   gx =  (imu->mpu6050.Gyroscope_X - imu->gyro_off[0]);
   gy =  (imu->mpu6050.Gyroscope_Y - imu->gyro_off[1]);
   gz =  (imu->mpu6050.Gyroscope_Z - imu->gyro_off[2]);
+  tmp = gx;
+  gx  = -gy;
+  gy  = -tmp;
+  gz  = -gz;
 
   // accel zero/scale adjustment
   ax =  (imu->mpu6050.Accelerometer_X - imu->accl_off[0]) * imu->accl_scale[0] / 4096;
