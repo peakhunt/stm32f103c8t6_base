@@ -71,17 +71,34 @@ ahrs_update(IMU_t* imu)
   // y --> East
   // z --> Down
   //
-  // in my test setup
+  // in board orientation setup
+  //     
+  //    ^
+  //    |
+  //   x|
+  //    |
+  //    ------------>
+  //   D    y
   //
-  // for gyro/accel,
-  // x = y
-  // y = x
-  // z = z
+  // my gyro/accel, MPU6050, weird! accel output is polarity reversed except Z!!!
+  //         x
+  //    <------------D
+  //                |
+  //                | y
+  //                |
+  //                |
+  //                \/
   //
-  // for  magnetometer
-  // x = -x
-  // y = y
-  // z = z
+  // my magnetometer, HMC5883L
+  //
+  //   U      y
+  //    ------------>
+  //    |
+  //   x|
+  //    |
+  //    |
+  //    \/
+  //
 
   // gyro zero adjustment
   gx =  (imu->mpu6050.Gyroscope_X - imu->gyro_off[0]);
