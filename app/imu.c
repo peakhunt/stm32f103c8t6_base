@@ -17,17 +17,6 @@
 // private definitions
 //
 ////////////////////////////////////////////////////////////////////////////////
-typedef enum {
-  CW0_DEG,
-  CW90_DEG,
-  CW180_DEG,
-  CW270_DEG,
-  CW0_DEG_FLIP,
-  CW90_DEG_FLIP,
-  CW180_DEG_FLIP,
-  CW270_DEG_FLIP,
-} SensorAlign_t;
-
 #define IMU_SAMPLE_INTERVAL                 2         // mms. 500 Hz
 #define IMU_SAMPLE_FREQUENCY                (1000.0f/IMU_SAMPLE_INTERVAL)
 
@@ -80,7 +69,18 @@ ahrs_update(IMU_t* imu)
   //    ------------>
   //   D    y
   //
-  // my gyro/accel, MPU6050, weird! accel output is polarity reversed except Z!!!
+  //  -- gx ---> +
+  //
+  //      |
+  //     gy
+  //      |
+  //      \/
+  //      +
+  //
+  //  gz increase in clock wise direction
+  //
+  // my gyro, MPU6050, weird! accel output is polarity reversed except Z!!!
+  // maybe it is a chinese clone. not sure yet.
   //         x
   //    <------------D
   //                |
@@ -88,6 +88,12 @@ ahrs_update(IMU_t* imu)
   //                |
   //                |
   //                \/
+  //
+  // for gyro, it's quite hard to describe precisely without visual aid but I'll try anyway.
+  // gx : counter clock wise
+  // gy : counter clock wise
+  // gz : counter clock wise
+  //
   //
   // my magnetometer, HMC5883L
   //
@@ -104,15 +110,23 @@ ahrs_update(IMU_t* imu)
   gx =  (imu->mpu6050.Gyroscope_X - imu->gyro_off[0]);
   gy =  (imu->mpu6050.Gyroscope_Y - imu->gyro_off[1]);
   gz =  (imu->mpu6050.Gyroscope_Z - imu->gyro_off[2]);
+  /*
   tmp = gx;
   gx  = -gy;
   gy  = -tmp;
+  gz  = -gz;
+  */
+  // align with reference frame
+  tmp = gx;
+  gx  = gy;
+  gy  = tmp;
   gz  = -gz;
 
   // accel zero/scale adjustment
   ax =  (imu->mpu6050.Accelerometer_X - imu->accl_off[0]) * imu->accl_scale[0] / 4096;
   ay =  (imu->mpu6050.Accelerometer_Y - imu->accl_off[1]) * imu->accl_scale[1] / 4096;
   az =  (imu->mpu6050.Accelerometer_Z - imu->accl_off[2]) * imu->accl_scale[2] / 4096;
+  // align with reference frame
   tmp = ax;
   ax  = -ay;
   ay  = -tmp;
@@ -121,6 +135,7 @@ ahrs_update(IMU_t* imu)
   mx = imu->mag.rx - imu->mag_bias[0];
   my = imu->mag.ry - imu->mag_bias[1];
   mz = imu->mag.rz - imu->mag_bias[2];
+  // align with reference frame
   mx = -mx;
   mz = -mz;
 
