@@ -232,7 +232,7 @@ shell_command_help(ShellIntf* intf, int argc, const char** argv)
 
   for(i = 0; i < sizeof(_commands)/sizeof(ShellCommand); i++)
   {
-    shell_printf(intf, "%-10s: ", _commands[i].command);
+    shell_printf(intf, "%-20s: ", _commands[i].command);
     shell_printf(intf, "%s\r\n", _commands[i].description);
   }
 }
