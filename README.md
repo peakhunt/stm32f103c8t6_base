@@ -9,4 +9,4 @@ If you need hard real-time, maybe you will have to change interrupt priority.
 
 Along the development, I was quite interested in developing an IMU(Inertial Motion Unit), which is still a work in progress.
 
-Hope you enjoy! Guess the cude is quite easy to follow.
+Hope you enjoy! Guess the code is quite easy to follow.
