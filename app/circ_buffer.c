@@ -38,17 +38,17 @@ __circ_buffer_dequeue(CircBuffer* cb, uint8_t* data, uint8_t size)
 {
   uint8_t i;
   
-	if(cb->num_bytes < size)
-	{
+  if(cb->num_bytes < size)
+  {
     return false;
-	}
+  }
 
   for(i = 0; i < size; i++)
   {
     data[i] = cb->buffer[cb->begin];
     cb->begin = (cb->begin + 1) % cb->capacity;
   }
-	cb->num_bytes -= size;
+  cb->num_bytes -= size;
 
   return true;
 }
@@ -99,7 +99,7 @@ circ_buffer_dequeue(CircBuffer* cb, uint8_t* data, uint8_t size, uint8_t from_is
 
   if(from_isr)
   {
-	  return __circ_buffer_dequeue(cb, data, size);
+    return __circ_buffer_dequeue(cb, data, size);
   }
 
   cb->enter_critical(cb);
