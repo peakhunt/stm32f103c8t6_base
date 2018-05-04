@@ -91,38 +91,38 @@ Src/gpio.c \
 Src/dma.c
 
 APP_DIR=app
-APP_SRC=														\
-$(APP_DIR)/circ_buffer.c						\
-$(APP_DIR)/bhash.c									\
-$(APP_DIR)/event_dispatcher.c				\
-$(APP_DIR)/soft_timer.c							\
-$(APP_DIR)/mainloop_timer.c					\
-$(APP_DIR)/stm32f1xx_callbacks.c		\
-$(APP_DIR)/blinky.c									\
-$(APP_DIR)/shell.c									\
-$(APP_DIR)/shell_if_usart.c					\
-$(APP_DIR)/shell_if_usb.c						\
-$(APP_DIR)/micros.c									\
-$(APP_DIR)/pwm_out.c								\
-$(APP_DIR)/pwm_in.c								  \
-$(APP_DIR)/i2c_bus.c								\
-$(APP_DIR)/spi_bus.c								\
-$(APP_DIR)/ws2812b.c								\
-$(APP_DIR)/hmc5883.c								\
-$(APP_DIR)/qmc5883.c								\
-$(APP_DIR)/bmp180.c									\
-$(APP_DIR)/bmp180_support.c					\
-$(APP_DIR)/mpu6050.c								\
-$(APP_DIR)/mpu6500_spi.c						\
-$(APP_DIR)/imu.c										\
-$(APP_DIR)/barometer.c							\
-$(APP_DIR)/mahony.c									\
-$(APP_DIR)/madgwick.c								\
-$(APP_DIR)/sensor_calib.c						\
-$(APP_DIR)/gyro_calibration.c				\
-$(APP_DIR)/accel_calibration.c			\
-$(APP_DIR)/mag_calibration.c			  \
-$(APP_DIR)/config.c			            \
+APP_SRC=                            \
+$(APP_DIR)/circ_buffer.c            \
+$(APP_DIR)/bhash.c                  \
+$(APP_DIR)/event_dispatcher.c       \
+$(APP_DIR)/soft_timer.c             \
+$(APP_DIR)/mainloop_timer.c         \
+$(APP_DIR)/stm32f1xx_callbacks.c    \
+$(APP_DIR)/blinky.c                 \
+$(APP_DIR)/shell.c                  \
+$(APP_DIR)/shell_if_usart.c         \
+$(APP_DIR)/shell_if_usb.c           \
+$(APP_DIR)/micros.c                 \
+$(APP_DIR)/pwm_out.c                \
+$(APP_DIR)/pwm_in.c                 \
+$(APP_DIR)/i2c_bus.c                \
+$(APP_DIR)/spi_bus.c                \
+$(APP_DIR)/ws2812b.c                \
+$(APP_DIR)/hmc5883.c                \
+$(APP_DIR)/qmc5883.c                \
+$(APP_DIR)/bmp180.c                 \
+$(APP_DIR)/bmp180_support.c         \
+$(APP_DIR)/mpu6050.c                \
+$(APP_DIR)/mpu6500_spi.c            \
+$(APP_DIR)/imu.c                    \
+$(APP_DIR)/barometer.c              \
+$(APP_DIR)/mahony.c                 \
+$(APP_DIR)/madgwick.c               \
+$(APP_DIR)/sensor_calib.c           \
+$(APP_DIR)/gyro_calibration.c       \
+$(APP_DIR)/accel_calibration.c      \
+$(APP_DIR)/mag_calibration.c        \
+$(APP_DIR)/config.c                 \
 $(APP_DIR)/app.c
 
 
@@ -183,7 +183,7 @@ C_DEFS =                    \
 -DUSE_HAL_DRIVER            \
 -DSTM32F103xB               \
 -D__ENABLE_IMU              \
--DBMP180_API								
+-DBMP180_API
 
 
 # AS includes
@@ -257,10 +257,10 @@ $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	$(HEX) $< $@
 	
 $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
-	$(BIN) $< $@	
-	
+	$(BIN) $< $@
+
 $(BUILD_DIR):
-	mkdir $@		
+	mkdir $@
 
 #######################################
 # clean up
