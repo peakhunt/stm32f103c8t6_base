@@ -8,7 +8,7 @@
    As for magnetometer, things are even more complicated. To handle hard-iron error, we sample
    magnetometer while moving it around uniformly in all direction. After sampling, we must
    calculate the magnetometer offset, which shifts sample center off the zero point. This is
-   so called simple sphere fitting without rotation and quite efficient hard-iron error.
+   so called simple sphere fitting without rotation and quite efficient for hard-iron error.
    Offset can be calculated simply by off = (max + min) / 2 but this source is using a bit
    sophiscated LR guass algorithm for the offset calculation.
 
