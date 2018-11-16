@@ -92,6 +92,8 @@ static void
 shell_if_usart_enter_critical(CircBuffer* cb)
 {
   NVIC_DisableIRQ(_irqn);
+  __DSB();
+  __ISB();
 }
 
 static void
